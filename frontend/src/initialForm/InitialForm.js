@@ -16,8 +16,19 @@ export default function InitialForm() {
     const [step, setStep] = useState(0);
     const [totalSteps, setTotalSteps] = useState(0);
     const [user_mode, setMode] = useState("");
-    const [welcomeComplete, setWelcomeComplete] = useState(false);
     
+    const changeMode = async (mode) => {
+        console.log("works");
+        if(mode === "full")
+            setTotalSteps(8);
+        else if(mode === "custom")
+            setTotalSteps(5);
+        
+        await setMode(mode);
+        await setStep(1);
+
+    }
+
     return (
         //Welcome.js
 
@@ -34,18 +45,19 @@ export default function InitialForm() {
         //Dietary restrictions
         //Meals per day, snacks per day
         //Schedule / cheat meals
-        <div>
-            {!welcomeComplete && <Welcome complete = {setWelcomeComplete} setMode = {setMode} />}
-            <ManualSetup />
-            {(user_mode === "custom" && step === 0) && <ManualSetup change = {setStep}/>}
-            {(user_mode === "full" && step === 0) && <Biography change = {setStep}/>}
-            {(user_mode === "full" && step === 1) && <ActivityLevel change = {setStep}/>}
-            {(user_mode === "full" && step === 2) && <Goal change = {setStep}/>}
-            {(user_mode === "full" && step === 3) && <MacroSettings change = {setStep}/>}
+        <>
+            {user_mode !== "" && <div>{user_mode}</div>}
+            {step === 0 && <Welcome selection = {changeMode} />}
+            {/*<ManualSetup />*/}
+            {(user_mode === "custom" && step === 1) && <ManualSetup change = {setStep}/>}
+            {(user_mode === "full" && step === 1) && <Biography change = {setStep}/>}
+            {(user_mode === "full" && step === 2) && <ActivityLevel change = {setStep}/>}
+            {(user_mode === "full" && step === 3) && <Goal change = {setStep}/>}
+            {(user_mode === "full" && step === 4) && <MacroSettings change = {setStep}/>}
             {(step === 10) && <Restrictions />}
             {(step === 11) && <Schedule />}
             {(step === 12) && <Finalize />}
-        </div>
+        </>
 
     )
 }
