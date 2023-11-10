@@ -1,0 +1,6 @@
+.incompleteStep{
+    height: 10px;
+    border-radius: 50%;
+    width: 10px;
+    background-color: grey;
+}

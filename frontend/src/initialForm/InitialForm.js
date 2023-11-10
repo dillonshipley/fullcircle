@@ -11,6 +11,8 @@ import Restrictions     from './Shared/Restrictions'
 import Schedule         from './Shared/Schedule'
 import Finalize         from './Shared/Finalize'
 
+import Steps            from './Steps'
+
 
 export default function InitialForm() {
     const [step, setStep] = useState(0);
@@ -23,7 +25,7 @@ export default function InitialForm() {
             setTotalSteps(8);
         else if(mode === "custom")
             setTotalSteps(5);
-        
+
         await setMode(mode);
         await setStep(1);
 
@@ -46,6 +48,7 @@ export default function InitialForm() {
         //Meals per day, snacks per day
         //Schedule / cheat meals
         <>
+            <Steps total = {3} complete = {2} />
             {user_mode !== "" && <div>{user_mode}</div>}
             {step === 0 && <Welcome selection = {changeMode} />}
             {/*<ManualSetup />*/}

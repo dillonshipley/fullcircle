@@ -21,6 +21,9 @@ export default function Welcome({selection}){
                     </div>
                 </Col>
             </Row>
+            <Row className = "d-flex justify-content-center">
+                Alternatively, choose to modify a previous submission.
+            </Row>
         </Container>
     );
 }
