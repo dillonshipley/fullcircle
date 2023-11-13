@@ -6,7 +6,7 @@ const FormGroup = ({macro, value, setValue, type}) => {
         const inputValue = event.target.value;
 
         // Use a regular expression to allow only numeric input
-        if ((/^[0-9]*$/.test(inputValue) || inputValue === '') && macro === "Numeric") {
+        if ((/^[0-9]*$/.test(inputValue) || inputValue === '') && type === "Numeric") {
             setValue(macro, inputValue);
         } else if (type === "Text"){
             console.log("Works");
@@ -45,10 +45,30 @@ export default class IngredientLogger extends Component{
         }
     }
 
-    handleSubmit = (event) => {
+    handleSubmit = async (event) => {
         event.preventDefault();
         // Handle submission or any other logic with the numeric value
         console.log(this.state);
+        console.log(process.env.REACT_APP_API_URL);
+
+        let ingredient = JSON.stringify({
+            'ingredientName': this.state.Name,
+            'cals': this.state.Calories,
+            'protein': this.state.Protein,
+            'carbs': this.state.Carbohydrates,
+            'fats': this.state.Fats,
+            'amount': this.state.Amount,
+            'amountUnit': this.state.AmountUnit
+        });
+
+        const response = await fetch(process.env.REACT_APP_API_URL + "post/ingredient", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: ingredient
+        });
+
     };
 
     changeState = (key, value) => {
