@@ -24,8 +24,9 @@ const FormGroup = ({macro, value, setValue, type}) => {
             placeholder={"Enter the ingredient's " + macro}
             value={value}
             onChange={handleInputChange}
+            autocomplete="off"
             />
-            <Form.Text className="text-muted">Only numeric input is allowed.</Form.Text>
+            {type === "Numeric" && <Form.Text className="text-muted">Only numeric input is allowed.</Form.Text>}
         </Form.Group>
     );
 }
@@ -36,29 +37,50 @@ export default class IngredientLogger extends Component{
         super(props);
         this.state = {
             Name: "",
-            Calories: 0,
-            Carbohydrates: 0,
-            Fats : 0,
-            Protein: 0,
+            Calories: "",
+            Carbohydrates: "",
+            Fats : "",
+            Protein: "",
             AmountUnit: "",
-            Amount: 0
+            Amount: "",
+            error: ""
         }
+    }
+
+    checkNumeric = (value) => {
+        return isNaN(parseFloat(value));
+    }
+
+    checkNonEmpty = (value) => {
+        return value === "";
     }
 
     handleSubmit = async (event) => {
         event.preventDefault();
-        // Handle submission or any other logic with the numeric value
-        console.log(this.state);
-        console.log(process.env.REACT_APP_API_URL);
+
+        //Initially set the error state to null
+        this.changeState("error", "");
+        
+        //Error checking - check that strings are not empty, numeric fields are numeric
+        if(this.checkNonEmpty(this.state.Name)) this.changeState("error", "Name");;
+        if(this.checkNonEmpty(this.state.Calories)      || this.checkNumeric(this.state.Calories)) this.changeState("error", "Calories");
+        if(this.checkNonEmpty(this.state.Protein)       || this.checkNumeric(this.state.Protein)) this.changeState("error", "Protein");
+        if(this.checkNonEmpty(this.state.Carbohydrates) || this.checkNumeric(this.state.Carbohydrates)) this.changeState("error", "Carbohydrates");
+        if(this.checkNonEmpty(this.state.Fats)          || this.checkNumeric(this.state.Fats)) this.changeState("error", "Fats");
+        if(this.checkNonEmpty(this.state.Amount)        || this.checkNumeric(this.state.Amount)) this.changeState("error", "Amount");
+        if(this.checkNonEmpty(this.state.AmountUnit)) this.changeState("error", "Amount Unit");
+        
+        if(this.state.error != "")
+            return;
 
         let ingredient = JSON.stringify({
-            'ingredientName': this.state.Name,
-            'cals': this.state.Calories,
-            'protein': this.state.Protein,
-            'carbs': this.state.Carbohydrates,
-            'fats': this.state.Fats,
-            'amount': this.state.Amount,
-            'amountUnit': this.state.AmountUnit
+            'ingredientName':   this.state.Name,
+            'cals':             this.state.Calories,
+            'protein':          this.state.Protein,
+            'carbs':            this.state.Carbohydrates,
+            'fats':             this.state.Fats,
+            'amount':           this.state.Amount,
+            'amountUnit':       this.state.AmountUnit
         });
 
         const response = await fetch(process.env.REACT_APP_API_URL + "post/ingredient", {
@@ -93,6 +115,7 @@ export default class IngredientLogger extends Component{
                 <Button variant="primary" type="submit">
                     Submit
                 </Button>
+                {this.state.error != "" && <p style={{color: "red"}}>There is an error with the {this.state.error} input. Please correct it and try again.</p>}
                 </Form>
             </>
           );
