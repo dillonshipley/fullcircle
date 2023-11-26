@@ -3,7 +3,7 @@ import './App.css';
 import React from 'react';
 
 import InitialForm    from './initialForm/InitialForm';
-import Dashboard      from './admin/Dashboard'
+import AdminDashboard      from './admin/AdminDashboard'
 
 import {useState} from 'react';
 
@@ -11,7 +11,7 @@ import {useState} from 'react';
 function App() {
   return (
     <div className="App">
-      <Dashboard />
+      <AdminDashboard />
       <InitialForm />
     </div>
 

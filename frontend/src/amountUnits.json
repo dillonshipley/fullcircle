@@ -1,0 +1,11 @@
+{
+    "amountUnits" : 
+    ["oz", 
+    "cup", 
+    "pint",
+    "quart",
+    "gallon",
+    "tbsp",
+    "lb",
+    "tsp"]
+}
