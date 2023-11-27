@@ -1,10 +1,10 @@
 import IngredientLogger     from "./addForms/IngredientLogger";
 import MealLogger           from "./addForms/MealLogger";
-import ViewIngredient       from "./addForms/ViewIngredient";
+import AddRecipe       from "./addForms/AddRecipe";
 
 import {Container, Row, Col} from "react-bootstrap";
 
-export default function Dashboard(){
+export default function AdminDashboard(){
     return (
         <Container fluid>
             <Row>
@@ -12,15 +12,13 @@ export default function Dashboard(){
                     <IngredientLogger />
                 </Col>
                 <Col xs = {4}>
-                    <ViewIngredient />
+                    <MealLogger />
                 </Col>
                 <Col xs = {4}>
-                    <MealLogger />                    
+                    <AddRecipe />                    
                 </Col>
 
             </Row>
-        </Container>
-
-        
+        </Container>      
     );   
 }
