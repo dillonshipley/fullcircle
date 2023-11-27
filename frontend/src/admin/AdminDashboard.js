@@ -12,7 +12,7 @@ export default function AdminDashboard(){
                     <IngredientLogger />
                 </Col>
                 <Col xs = {4}>
-                    {/*<MealLogger />*/}
+                    <MealLogger />
                 </Col>
                 <Col xs = {4}>
                     <AddRecipe />                    

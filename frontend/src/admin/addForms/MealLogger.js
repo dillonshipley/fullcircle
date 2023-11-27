@@ -1,18 +1,25 @@
 import {Form, Button} from 'react-bootstrap';
-import { useState } from 'react';
+import { useState, Component } from 'react';
 
 function AddIngredient({name, addIngredient, removeIngredient}){
     const [variableAmount, setVariableAmount] = useState(false);
 
     return (
-        <>
+        <div style = {{border: "1px solid black"}}>
             {/*dropdown with all ingredients in the system*/}
             <Form.Group>
                 <Form.Label>Ingredient</Form.Label>
-                <Form.Control 
-                    type = "text"
-                    placeholder = {"Ingredient"}
-                    autocomplete="off" />
+                <Form.Control
+                    as="select"
+                    value={name} // Assuming name is the selected ingredient value
+                >
+                    {/* Assuming availableIngredients is an array of available ingredients */}
+                    {availableIngredients.map((ingredient) => (
+                        <option key={ingredient.id} value={ingredient.name}>
+                            {ingredient.name}
+                        </option>
+                    ))}
+                </Form.Control>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Is amount variable?</Form.Label>
@@ -21,7 +28,7 @@ function AddIngredient({name, addIngredient, removeIngredient}){
                     onClick = {() => setVariableAmount(!variableAmount)}
                     />
             </Form.Group>
-            {variableAmount &&
+            {!variableAmount &&
                 <Form.Group>
                     <Form.Label>Ingredient amount</Form.Label>
                     <Form.Control 
@@ -30,7 +37,7 @@ function AddIngredient({name, addIngredient, removeIngredient}){
                         autocomplete="off" />
                 </Form.Group>
             }
-            {!variableAmount &&
+            {variableAmount &&
                 <Form.Group>
                     <Form.Label>Ingredient amount</Form.Label>
                     <Form.Control
@@ -53,15 +60,32 @@ function AddIngredient({name, addIngredient, removeIngredient}){
                     autocomplete = "off" />
             </Form.Group>
             <Button>Remove Ingredient</Button>
-        </>
+        </div>
     );
 }
 
-export default class MealLogger {
+export default class MealLogger extends Component{
 
     constructor(props){
+        super(props);
         //I need a key/value approach to handle updating names
         this.ingredients = [{key: 1, value: ""}];
+        
+    }
+
+    componentDidMount() {
+        // This code will run after the component has been added to the DOM
+        this.loadDataAsync();
+    }
+
+    async loadIngredients() {
+        const response = await fetch(process.env.REACT_APP_API_URL + "get/ingredient", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: ingredient
+        });
     }
 
     addIngredient(){
@@ -93,13 +117,15 @@ export default class MealLogger {
                         />
                     </Form.Group>
                     {/*loop - for x in ingredientCount, display an ingredient*/}
-                    {this.ingredients.map((ingredient) => {
+                    {this.ingredients.map((ingredient) => (
                         <AddIngredient 
-                            key = {ingredient.key} 
-                            name = {ingredient.value} 
-                            updateName = {(e) => this.updateName(e)}
-                            removeIngredient = {(e) => this.removeIngredient(e)}/> 
-                    })}
+                            key={ingredient.key} 
+                            name={ingredient.value} 
+                            updateName={(e) => this.updateName(e)}
+                            removeIngredient={(e) => this.removeIngredient(e)}
+                        />
+                    ))}
+
                     <br></br>
                     <Button onClick = {() => this.addIngredient()}>Add Ingredient</Button>
     
