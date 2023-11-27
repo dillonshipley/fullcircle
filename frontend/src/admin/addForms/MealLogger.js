@@ -1,7 +1,7 @@
 import {Form, Button} from 'react-bootstrap';
 import { useState } from 'react';
 
-function AddIngredient(){
+function AddIngredient({name, addIngredient, removeIngredient}){
     const [variableAmount, setVariableAmount] = useState(false);
 
     return (
@@ -70,8 +70,13 @@ export default class MealLogger {
 
     }
 
-    updateName(){
+    updateName({key, name}){
 
+    }
+
+    removeIngredient({key}){
+        //remove the ingredient with the specified key from the list of ingredients
+        // re render display?
     }
 
     render(){
@@ -89,7 +94,11 @@ export default class MealLogger {
                     </Form.Group>
                     {/*loop - for x in ingredientCount, display an ingredient*/}
                     {this.ingredients.map((ingredient) => {
-                        <AddIngredient key = {ingredient.key} name = {ingredient.value} updateName = {(e) => this.updateName(e)}/> 
+                        <AddIngredient 
+                            key = {ingredient.key} 
+                            name = {ingredient.value} 
+                            updateName = {(e) => this.updateName(e)}
+                            removeIngredient = {(e) => this.removeIngredient(e)}/> 
                     })}
                     <br></br>
                     <Button onClick = {() => this.addIngredient()}>Add Ingredient</Button>

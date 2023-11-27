@@ -19,8 +19,6 @@ export default function AdminDashboard(){
                 </Col>
 
             </Row>
-        </Container>
-
-        
+        </Container>      
     );   
 }
