@@ -10,14 +10,14 @@ import {useState} from 'react';
 
 
 function App() {
-  const [mode, setMode] = useState("user");
+  //const [mode, setMode] = useState("user");
 
   return (
     <div className="App">
-      <Button onClick = {() => setMode("admin")}>Enable Admin</Button>
-      <Button onClick = {() => setMode("user")}>User View</Button>
-      {mode === "admin" && <AdminDashboard />}
-      {mode === "user" && <InitialForm />}
+      {/*<Button onClick = {() => setMode("admin")}>Enable Admin</Button>
+      <Button onClick = {() => setMode("user")}>User View</Button>*/}
+      <AdminDashboard />
+      {/*mode === "user" && <InitialForm />*/}
     </div>
 
     

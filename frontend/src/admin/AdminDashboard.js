@@ -1,6 +1,6 @@
 import IngredientLogger     from "./addForms/IngredientLogger";
 import MealLogger           from "./addForms/MealLogger";
-import AddRecipe       from "./addForms/AddRecipe";
+import AddSchedule       from "./addForms/AddSchedule";
 
 import {Container, Row, Col} from "react-bootstrap";
 
@@ -9,13 +9,13 @@ export default function AdminDashboard(){
         <Container fluid>
             <Row>
                 <Col xs = {4}>
-                    <IngredientLogger />
+                    {/*<IngredientLogger />*/}
                 </Col>
                 <Col xs = {4}>
-                    <MealLogger />
+                    {/*<MealLogger />*/}
                 </Col>
                 <Col xs = {4}>
-                    <AddRecipe />                    
+                    <AddSchedule />                    
                 </Col>
 
             </Row>

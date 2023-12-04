@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import {Form, Button} from 'react-bootstrap';
 
-const FormGroup = ({macro, value, setValue, type}) => {
+const FormGroup = ({macro, val, setValue, type}) => {
     const handleInputChange = (event) => {
-        const inputValue = event.target.value;
+        const inputValue = event.target.val;
 
         // Use a regular expression to allow only numeric input
         if ((/^[0-9]*$/.test(inputValue) || inputValue === '') && type === "Numeric") {
@@ -15,16 +15,15 @@ const FormGroup = ({macro, value, setValue, type}) => {
             
     };
 
-
     return (
         <Form.Group controlId="calsInput">
             <Form.Label>{macro + ":"}</Form.Label>
             <Form.Control
             type="text"
             placeholder={"Enter the ingredient's " + macro}
-            value={value}
+            value={val}
             onChange={handleInputChange}
-            autocomplete="off"
+            autoComplete="off"
             />
             {type === "Numeric" && <Form.Text className="text-muted">Only numeric input is allowed.</Form.Text>}
         </Form.Group>
@@ -56,7 +55,7 @@ export default class IngredientLogger extends Component{
     }
 
     handleSubmit = async (event) => {
-        event.preventDefault();
+        console.log("works");
 
         //Initially set the error state to null
         this.changeState("error", "");
@@ -69,17 +68,14 @@ export default class IngredientLogger extends Component{
         if(this.checkNonEmpty(this.state.Fats)          || this.checkNumeric(this.state.Fats)) this.changeState("error", "Fats");
         if(this.checkNonEmpty(this.state.Amount)        || this.checkNumeric(this.state.Amount)) this.changeState("error", "Amount");
         if(this.checkNonEmpty(this.state.AmountUnit)) this.changeState("error", "Amount Unit");
-        
-        if(this.state.error != "")
-            return;
 
         let ingredient = JSON.stringify({
             'ingredientName':   this.state.Name,
-            'cals':             this.state.Calories,
-            'protein':          this.state.Protein,
-            'carbs':            this.state.Carbohydrates,
-            'fats':             this.state.Fats,
-            'amount':           this.state.Amount,
+            'cals':             parseInt(this.state.Calories),
+            'protein':          parseInt(this.state.Protein),
+            'carbs':            parseInt(this.state.Carbohydrates),
+            'fats':             parseInt(this.state.Fats),
+            'amount':           parseInt(this.state.Amount),
             'amountUnit':       this.state.AmountUnit
         });
 
@@ -90,6 +86,7 @@ export default class IngredientLogger extends Component{
             },
             body: ingredient
         });
+        console.log(response);
 
     };
 
@@ -104,15 +101,15 @@ export default class IngredientLogger extends Component{
             <>
                 <h4>Add An Ingredient</h4>
                 <Form onSubmit={this.handleSubmit}>
-                    <FormGroup macro = "Name"           value = {this.state.name}       setValue = {this.changeState} type = "Text"/>
-                    <FormGroup macro = "Calories"       value = {this.state.cals}       setValue = {this.changeState} type = "Numeric"/>
-                    <FormGroup macro = "Carbohydrates"  value = {this.state.carbs}      setValue = {this.changeState} type = "Numeric"/>
-                    <FormGroup macro = "Fats"           value = {this.state.fats}       setValue = {this.changeState} type = "Numeric"/>
-                    <FormGroup macro = "Protein"        value = {this.state.protein}    setValue = {this.changeState} type = "Numeric"/>
-                    <FormGroup macro = "AmountUnit"     value = {this.state.AmountUnit} setValue = {this.changeState} type = "Text"/>
-                    <FormGroup macro = "Amount"         value = {this.state.amount}     setValue = {this.changeState} type = "Numeric"/>
+                    <FormGroup macro = "Name"           val = {this.state.name}       setValue = {this.changeState} type = "Text"/>
+                    <FormGroup macro = "Calories"       val = {this.state.cals}       setValue = {this.changeState} type = "Numeric"/>
+                    <FormGroup macro = "Carbohydrates"  val = {this.state.carbs}      setValue = {this.changeState} type = "Numeric"/>
+                    <FormGroup macro = "Fats"           val = {this.state.fats}       setValue = {this.changeState} type = "Numeric"/>
+                    <FormGroup macro = "Protein"        val = {this.state.protein}    setValue = {this.changeState} type = "Numeric"/>
+                    <FormGroup macro = "AmountUnit"     val = {this.state.AmountUnit} setValue = {this.changeState} type = "Text"/>
+                    <FormGroup macro = "Amount"         val = {this.state.amount}     setValue = {this.changeState} type = "Numeric"/>
             
-                <Button variant="primary" type="submit">
+                <Button variant="primary" type="submit" onClick = {async () => this.handleSubmit()}>
                     Submit
                 </Button>
                 {this.state.error != "" && <p style={{color: "red"}}>There is an error with the {this.state.error} input. Please correct it and try again.</p>}

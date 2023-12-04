@@ -15,10 +15,8 @@ function AddIngredient({name, availableIngredients, addIngredient, removeIngredi
                     value={name} // Assuming name is the selected ingredient value
                 >
                     {/* Assuming availableIngredients is an array of available ingredients */}
-                    {availableIngredients.map((ingredient) => (
-                        <option key={ingredient.id} value={ingredient.name}>
-                            {ingredient.name}
-                        </option>
+                    {(availableIngredients != null) && availableIngredients.map((ingredient) => (
+                        <option>{ingredient}</option>
                     ))}
                 </Form.Control>
             </Form.Group>
@@ -35,7 +33,7 @@ function AddIngredient({name, availableIngredients, addIngredient, removeIngredi
                     <Form.Control 
                         type = "text"
                         placeholder = {"Ingredient amount"}
-                        autocomplete="off" />
+                        autoComplete="off" />
                 </Form.Group>
             }
             {variableAmount &&
@@ -58,7 +56,7 @@ function AddIngredient({name, availableIngredients, addIngredient, removeIngredi
                 <Form.Control 
                     type = "text"
                     placeholder = "oz, cup, tbsp, etc;"
-                    autocomplete = "off" />
+                    autoComplete = "off" />
             </Form.Group>
             <Button>Remove Ingredient</Button>
         </div>
@@ -71,26 +69,32 @@ export default class MealLogger extends Component{
         super(props);
         //I need a key/value approach to handle updating names
         this.ingredients = [{key: 1, value: ""}];
-        this.allIngredients = null;
+        this.state = {
+            allIngredients: null
+        }
         
     }
 
     componentDidMount() {
         // This code will run after the component has been added to the DOM
-        this.loadDataAsync();
+        this.loadIngredients().then(data => {
+            // Additional logic to execute after the data is fetched
+            this.setState({allIngredients: data}, () => {
+                console.log(this.state.allIngredients);
+            });
+          });;
     }
 
     async loadIngredients() {
-        const getIngredients = async () => {
-            const response = await fetch(process.env.REACT_APP_API_URL + "get/ingredientList", {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            console.log(response.json);
-            this.allIngredients = response.json;
-        }
+        console.log("load");
+        const response = await fetch(process.env.REACT_APP_API_URL + "get/ingredientList", {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        let ingredientList = Array.from(await response.json());
+        return ingredientList;
     }
 
     addIngredient(){
@@ -111,8 +115,6 @@ export default class MealLogger extends Component{
 
     render(){
         return (
-
-
             <>
                 <h4>Add A Meal</h4>
                 <Form>
@@ -121,7 +123,7 @@ export default class MealLogger extends Component{
                         <Form.Control
                         type="text"
                         placeholder={"Name of the meal"}
-                        autocomplete="off"
+                        autoComplete="off"
                         />
                     </Form.Group>
                     {/*loop - for x in ingredientCount, display an ingredient*/}
@@ -129,7 +131,7 @@ export default class MealLogger extends Component{
                         <AddIngredient 
                             key={ingredient.key} 
                             name={ingredient.value} 
-                            availableIngredients={this.allIngredients}
+                            availableIngredients={this.state.allIngredients}
                             updateName={(e) => this.updateName(e)}
                             removeIngredient={(e) => this.removeIngredient(e)}
                         />
