@@ -1,13 +1,38 @@
-import React from 'react';
-import {Form} from 'react-bootstrap';
+import React, {useState} from 'react';
+import {Col, Row, Form, Button} from 'react-bootstrap';
 
-function Day({index, minimized, meals, show}){
+function Day({index, minimized, changeEvent, meals, snacks, breakfast, show, renderMe}){
+
+    const changeInput = (event, type) => {
+        console.log("input changed");
+        if(type == "breakfast"){
+            changeEvent("breakfast", event.target.checked, index);
+        } else if (type == "meals"){
+            changeEvent("meals", event.target.value, index);
+        } else if (type == "snacks"){
+            changeEvent("snacks", event.target.value, index);
+        }
+    }
+
+    if(!renderMe)
+        return;
 
     if(!minimized){
         return (
             <div>
-                <h5>{"Day " + (index + 1)}</h5>
-                <p onClick = {() => {console.log("click");show(index)}}> + </p>
+                <Row >
+                    <Col xs={6}>
+                        <h5>{"Day " + (index + 1)}</h5>
+                    </Col>
+                    <Col xs={6} style = {{display: "inline"}} className = "d-flex flex-direction-row">
+                        <div className = "mr-3"> Meals : {meals}</div>
+                        <div className = "mr-3"> Snacks : {snacks}</div>
+                        <div className = "mr-3" > Breakfast : {breakfast ? "True" : "False"}</div>
+                    </Col>
+
+                </Row>
+                
+                <Button onClick = {() => {console.log("click");show(index)}}> Edit </Button>
             </div> 
         );
     } else {
@@ -19,6 +44,8 @@ function Day({index, minimized, meals, show}){
                     <Form.Control 
                         type = "text"
                         placeholder = "Between 1 and 6"
+                        value = {meals}
+                        onChange = {(e) => changeInput(e, "meals")}
                         autoComplete = "off" />
                 </Form.Group>
                 <Form.Group>
@@ -26,6 +53,8 @@ function Day({index, minimized, meals, show}){
                     <Form.Control 
                         type = "text"
                         placeholder = "Between 0 and 5"
+                        value = {snacks}
+                        onChange = {(e) => changeInput(e, "snacks")}
                         autoComplete = "off" />
                 </Form.Group>
                 <Form.Group>
@@ -33,6 +62,8 @@ function Day({index, minimized, meals, show}){
                     <Form.Control 
                         type = "checkbox"
                         placeholder = "Between 0 and 5"
+                        checked = {breakfast}
+                        onChange = {(e) => changeInput(e, "breakfast")}
                         autoComplete = "off" />
                 </Form.Group>
 
@@ -56,9 +87,18 @@ export default class AddSchedule extends React.Component{
 
     constructor(props){
         super(props);
+        let days = [];
+        for(let i = 0; i < 7; i++){
+            days.push({
+                "meals": 0,
+                "snacks": 0,
+                "breakfast": true
+            });
+        }
+        
         this.state = {
             days: 7,
-            dayArray: [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+            dayArray: days,
             shown: null
         }
         this.daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -67,17 +107,13 @@ export default class AddSchedule extends React.Component{
     increaseDays = () => {
         if(this.state.days === 7)
             return;
-        this.setState({days: this.state.days + 1}, () => {
-            this.setState({dayArray: new Array(this.state.days).fill(undefined)});
-        });
+            this.setState({days: this.state.days + 1});
     }
 
     decreaseDays = () => {
         if(this.state.days === 1)
             return;
-        this.setState({days: this.state.days - 1}, () => {
-            this.setState({dayArray: new Array(this.state.days).fill(undefined)});
-        });
+        this.setState({days: this.state.days - 1});
     }
 
      handleSubmit = (event) => {
@@ -93,7 +129,24 @@ export default class AddSchedule extends React.Component{
         this.setState({firstDay: e});
       }
 
+      handleDayChange = (type, event, index) => {
+        let newDayArray = this.state.dayArray;
+        switch(type){
+            case "meals":
+                newDayArray[index].meals = event;
+                break;
+            case "snacks":
+                newDayArray[index].snacks = event;
+                break;
+            case "breakfast":
+                newDayArray[index].breakfast = event;
+                break;
+        }
+        this.setState({dayArray: newDayArray}, () => console.log(this.state.dayArray));
+      }
+
     render(){
+        let type;
         return (
             <Form onSubmit ={this.handleSubmit}>
                 <p>What day do you want to start on?</p>
@@ -113,8 +166,12 @@ export default class AddSchedule extends React.Component{
                             key = {index} 
                             index = {index} 
                             minimized = {this.state.shown === index} 
-                            meals = {1}
+                            changeEvent={(type, e) => this.handleDayChange(type, e, index)}
+                            meals={key.meals}
+                            snacks={key.snacks}
+                            breakfast={key.breakfast}
                             show = {() => this.setShownDay(index)}
+                            renderMe = {index < this.state.days}
                         />
                     ))
                 }
