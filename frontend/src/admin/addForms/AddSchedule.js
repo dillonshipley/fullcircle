@@ -21,7 +21,7 @@ function Day({index, minimized, changeEvent, meals, snacks, breakfast, show, ren
         return (
             <div>
                 <Row >
-                    <Col xs={6}>
+                    <Col xs={3}>
                         <h5>{"Day " + (index + 1)}</h5>
                     </Col>
                     <Col xs={6} style = {{display: "inline"}} className = "d-flex flex-direction-row">
@@ -29,10 +29,12 @@ function Day({index, minimized, changeEvent, meals, snacks, breakfast, show, ren
                         <div className = "mr-3"> Snacks : {snacks}</div>
                         <div className = "mr-3" > Breakfast : {breakfast ? "True" : "False"}</div>
                     </Col>
-
+                    <Col xs={3}>
+                        <Button onClick = {() => {console.log("click");show(index)}}> Edit </Button>
+                    </Col>
                 </Row>
                 
-                <Button onClick = {() => {console.log("click");show(index)}}> Edit </Button>
+                
             </div> 
         );
     } else {
