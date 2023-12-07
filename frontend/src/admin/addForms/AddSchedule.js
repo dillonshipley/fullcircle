@@ -118,10 +118,23 @@ export default class AddSchedule extends React.Component{
         this.setState({days: this.state.days - 1});
     }
 
-     handleSubmit = (event) => {
-        event.preventDefault(); // Make sure to prevent the default form submission
-        // Your form submission logic here
-      };
+    handleSubmit = async (event) => {
+        event.preventDefault();
+
+        //TODO:
+        let userKey = "239894c2-4887-4de7-bf7c-4651e70c7090";
+        let goalKey = "50dd8c7b-3b12-49e1-a192-fde441ace0ac";
+
+        const response = await fetch(process.env.REACT_APP_API_URL + "user/schedule", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: {"schedule": this.state.dayArray, "userKey": userKey, "goalKey": goalKey}
+        });
+        console.log(response.json());
+
+    };
 
       setShownDay = (e) => {
         this.setState({shown: e})
@@ -177,6 +190,9 @@ export default class AddSchedule extends React.Component{
                         />
                     ))
                 }
+                <Button variant="primary" type="submit">
+                    Submit
+                </Button>
             </Form>   
         );
     }

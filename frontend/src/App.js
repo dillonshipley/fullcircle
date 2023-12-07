@@ -5,18 +5,18 @@ import {Button} from 'react-bootstrap';
 
 import InitialForm    from './initialForm/InitialForm';
 import AdminDashboard      from './admin/AdminDashboard'
+import Login from './dashboard/Login.js'
 
 import {useState} from 'react';
 
 
 function App() {
-  //const [mode, setMode] = useState("user");
+  const [mode, setMode] = useState("user");
 
   return (
     <div className="App">
-      {/*<Button onClick = {() => setMode("admin")}>Enable Admin</Button>
-      <Button onClick = {() => setMode("user")}>User View</Button>*/}
-      <AdminDashboard />
+      {mode == "admin" && <AdminDashboard />}
+      {mode == "user" && <Login login = {() => setMode("admin")}/>}
       {/*mode === "user" && <InitialForm />*/}
     </div>
 
