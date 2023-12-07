@@ -13,10 +13,15 @@ import {useState} from 'react';
 function App() {
   const [mode, setMode] = useState("user");
 
+  const login = (userKey, mode) => {
+    setMode("admin");
+    console.log(userKey);
+  }
+
   return (
     <div className="App">
       {mode == "admin" && <AdminDashboard />}
-      {mode == "user" && <Login login = {() => setMode("admin")}/>}
+      {mode == "user" && <Login login = {(userKey) => setMode(userKey, "admin")}/>}
       {/*mode === "user" && <InitialForm />*/}
     </div>
 

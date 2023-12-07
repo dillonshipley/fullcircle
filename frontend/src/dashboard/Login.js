@@ -12,21 +12,26 @@ export default function Login({login}){
     const handleLogin = async (event) => {
         event.preventDefault();
         console.log(email);
-        const response = await fetch(process.env.REACT_APP_API_URL + "user/login", {
+        console.log(password);
+        console.log(process.env.REACT_APP_API_URL);
+        await fetch(process.env.REACT_APP_API_URL + "user/login", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({"email": email, "password": password})
         });
-        const x = await response.text();
-        console.log(x);
-        if(x === "Success")
-            login();
+
+        return;
+        //const x = await response.json();
+       //console.log(x);
+        //if(x.message === "Success")
+            //login(x.userKey);
     }
 
     const handleSignUp = async (event) => {
         event.preventDefault();
+        console.log("works");
         const response = await fetch(process.env.REACT_APP_API_URL + "user/user", {
             method: 'POST',
             headers: {
