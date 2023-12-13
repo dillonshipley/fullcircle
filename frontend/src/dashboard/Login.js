@@ -11,7 +11,7 @@ export default function Login({login}){
     
     const handleLogin = async (event) => {
         event.preventDefault();
-        console.log("LOGGING IN...")
+        console.log("Executing user/login API Call...")
         const response = await fetch(process.env.REACT_APP_API_URL + "user/login", {
             method: 'POST',
             headers: {
@@ -21,7 +21,6 @@ export default function Login({login}){
         });
 
         const x = await response.json();
-        console.log(x);
         if(x.message === "Success")
             login(x.userKey);
     }
