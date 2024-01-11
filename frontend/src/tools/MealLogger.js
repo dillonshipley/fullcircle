@@ -1,5 +1,5 @@
 
-import {Form, Button} from 'react-bootstrap';
+import {Form, Button, Container} from 'react-bootstrap';
 import { useState, Component } from 'react';
 
 function AddIngredient({name, availableIngredients, addIngredient, removeIngredient}){
@@ -72,17 +72,20 @@ export default class MealLogger extends Component{
         this.state = {
             allIngredients: null
         }
+        this.back = props.back;
         
     }
 
     componentDidMount() {
-        // This code will run after the component has been added to the DOM
+        // This code will run after the component has been added to the DOM 
+        /*
         this.loadIngredients().then(data => {
             // Additional logic to execute after the data is fetched
             this.setState({allIngredients: data}, () => {
                 console.log(this.state.allIngredients);
             });
           });;
+        */
     }
 
     async loadIngredients() {
@@ -115,7 +118,8 @@ export default class MealLogger extends Component{
 
     render(){
         return (
-            <>
+            <Container>
+                <Button onClick = {() => this.back("welcome")}>Back</Button>
                 <h4>Add A Meal</h4>
                 <Form>
                     <Form.Group>
@@ -141,7 +145,7 @@ export default class MealLogger extends Component{
                     <Button onClick = {() => this.addIngredient()}>Add Ingredient</Button>
     
                 </Form>
-            </>
+            </Container>
 
         );
     }

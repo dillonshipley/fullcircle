@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Col, Row, Form, Button} from 'react-bootstrap';
+import {Container, Col, Row, Form, Button} from 'react-bootstrap';
 
 function Day({index, minimized, changeEvent, meals, snacks, breakfast, show, renderMe}){
 
@@ -163,7 +163,10 @@ export default class AddSchedule extends React.Component{
     render(){
         let type;
         return (
-            <Form onSubmit ={this.handleSubmit}>
+            <Container>
+                <Button onClick = {() => this.props.back("welcome")}>Back</Button>
+                <h1 style={{textAlign: "center"}}>Your Schedule</h1>
+                <Form onSubmit ={this.handleSubmit}>
                 <p>What day do you want to start on?</p>
                     <select id = "dropdown" onChange={() => this.handleSelectChange()}>
                         {
@@ -193,7 +196,9 @@ export default class AddSchedule extends React.Component{
                 <Button variant="primary" type="submit">
                     Submit
                 </Button>
-            </Form>   
+            </Form>  
+            </Container>
+ 
         );
     }
 

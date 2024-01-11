@@ -3,7 +3,6 @@ import './App.css';
 import React from 'react';
 import {Button} from 'react-bootstrap';
 
-import InitialForm    from './initialForm/InitialForm';
 import UserDashboard      from './dashboard/UserDashboard.js'
 import Login from './dashboard/Login.js'
 
@@ -44,7 +43,6 @@ function App() {
     <div className="App">
       {mode == "admin" && <UserDashboard username = {username} goals = {goals}/>}
       {mode == "user" && <Login login = {(userKey) => login(userKey, "admin")}/>}
-      {/*mode === "user" && <InitialForm />*/}
     </div>
 
     
