@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Container, Row, Form, Col} from 'react-bootstrap';
+import {Container, Row, Form, Col, Button} from 'react-bootstrap';
 import NutritionLabel from '../tools/NutritionLabel';
 
 
@@ -13,7 +13,7 @@ export default function AddIngredient(){
     const search = async (event) => {
         event.preventDefault();
         console.log("Executing tf/ingredientListFDC API Call...")
-        const response = await fetch(process.env.REACT_APP_API_URL + "tf/ingredientListFDC", {
+        const response = await fetch(process.env.REACT_APP_API_URL + "tf/searchByNameFDC", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ export default function AddIngredient(){
     }
 
     const handleRadioChange = async (name, FDCID) => {
-        const response = await fetch(process.env.REACT_APP_API_URL + "tf/specificIngredientFDC", {
+        const response = await fetch(process.env.REACT_APP_API_URL + "tf/searchByIDFDC", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -69,6 +69,8 @@ export default function AddIngredient(){
                 <Col>
                     {selectedNutrients != null && <h2>{selectedIngredientName}</h2>}
                     {selectedNutrients != null && <NutritionLabel nutrients={selectedNutrients}/>}
+                    {selectedNutrients != null && <Button>Add to Database</Button>}
+                    
                 </Col>
 
 

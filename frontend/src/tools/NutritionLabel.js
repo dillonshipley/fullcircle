@@ -3,45 +3,59 @@ import './NutritionLabel.css';
 
 export default function NutritionLabel({nutrients}) {
 
-    const caloriesAmount = nutrients.find(x => x.name === "Calories")?.amount;
-    const fatAmount = nutrients.find(x => x.name === "Fats")?.amount;
-    const carbsAmount = nutrients.find(x => x.name === "Carbohydrates")?.amount;
-    const proteinAmount = nutrients.find(x => x.name === "Protein")?.amount
+    let calories, totalfats, transfat, saturatedfat, cholesterol, sodium, carbohydrates, dietaryfiber, sugars, protein, amount, amountUnit;
+    if(nutrients == null){
+        return (
+            <div>Nutrients could not be found!</div>
+        )
+    }
+    if(nutrients && Array.isArray(nutrients)){
+        calories =          nutrients.find(element => element.name === "Calories")?.amount;
+        totalfats =         nutrients.find(element => element.name === "Total Fat")?.amount;
+        transfat =          nutrients.find(element => element.name === "Trans Fat")?.amount ?? null;
+        saturatedfat =      nutrients.find(element => element.name === "Saturated Fat")?.amount;
+        cholesterol =       nutrients.find(element => element.name === "Cholesterol")?.amount;
+        sodium =            nutrients.find(element => element.name === "Sodium")?.amount;
+        carbohydrates =     nutrients.find(element => element.name === "Carbohydrates")?.amount;
+        dietaryfiber =      nutrients.find(element => element.name === "Dietary Fiber")?.amount;
+        sugars =            nutrients.find(element => element.name === "Sugars")?.amount;
+        protein =           nutrients.find(element => element.name === "Protein")?.amount;
+        amount =            nutrients.find(element => element.name === "Total")?.amount;
+        amountUnit =        nutrients.find(element => element.name === "Total")?.unit;
+    }
 
     return (
         <>
-            <section class="performance-facts">
-            <header class="performance-facts__header">
-                <h1 class="performance-facts__title">Nutrition Facts</h1>
+            <section className="performance-facts">
+            <header className="performance-facts__header">
+                <h1 className="performance-facts__title">Nutrition Facts</h1>
                 {/*<p>Serving Size 1/2 cup (about 82g)*/}
-                <p>Serving Per Container 8</p>
             </header>
-            <table class="performance-facts__table">
+            <table className="performance-facts__table">
                 <thead>
                 <tr>
-                    <th colspan="3" class="small-info">
-                    Amount Per Serving
+                    <th colspan="3" className="small-info">
+                    {"Amount Per Serving: " + amount + amountUnit}
                     </th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <th colspan="2">
-                    <b>Calories</b> {caloriesAmount}
+                    <b>Calories</b> {calories != null && calories.toFixed(2)}
                     </th>
                     <td>
-                    Calories from Fat
-                    130
+                    Calories from Fat {(totalfats * 9).toFixed(2)}
                     </td>
                 </tr>
-                <tr class="thick-row">
-                    <td colspan="3" class="small-info">
+                <tr className="thick-row">
+                    <td colspan="3" className="small-info">
                     <b>% Daily Value*</b>
                     </td>
                 </tr>
                 <tr>
                     <th colspan="2">
-                        <b>Total Fat</b> {fatAmount}g
+                        <b>Total Fat</b> {totalfats != null && totalfats}g
                     </th>
                     <td>
                     { //TODO - display fat daily value (USDA recommended)
@@ -50,30 +64,26 @@ export default function NutritionLabel({nutrients}) {
                     </td>
                 </tr>
                 <tr>
-                    <td class="blank-cell">
+                    <td className="blank-cell">
                     </td>
                     <th>
-                    Saturated Fat
-                    9g
+                    Saturated Fat {saturatedfat != null && saturatedfat}g
                     </th>
                     <td>
                     <b>22%</b>
                     </td>
                 </tr>
                 <tr>
-                    <td class="blank-cell">
-                    </td>
+                    <td className="blank-cell"></td>
                     <th>
                     Trans Fat
                     0g
                     </th>
-                    <td>
-                    </td>
+                    <td></td>
                 </tr>
                 <tr>
                     <th colspan="2">
-                    <b>Cholesterol</b>
-                    55mg
+                    <b>Cholesterol</b> {cholesterol != null && cholesterol}mg
                     </th>
                     <td>
                     <b>18%</b>
@@ -81,8 +91,7 @@ export default function NutritionLabel({nutrients}) {
                 </tr>
                 <tr>
                     <th colspan="2">
-                    <b>Sodium</b>
-                    40mg
+                    <b>Sodium</b> {sodium != null && sodium}mg
                     </th>
                     <td>
                     <b>2%</b>
@@ -90,36 +99,34 @@ export default function NutritionLabel({nutrients}) {
                 </tr>
                 <tr>
                     <th colspan="2">
-                    <b>Total Carbohydrate</b> {carbsAmount}g
+                    <b>Total Carbohydrate</b> {carbohydrates != null && carbohydrates}g
                     </th>
                     <td>
                     <b>6%</b>
                     </td>
                 </tr>
                 <tr>
-                    <td class="blank-cell">
+                    <td className="blank-cell">
                     </td>
                     <th>
-                    Dietary Fiber
-                    1g
+                    Dietary Fiber {dietaryfiber != null && dietaryfiber}g
                     </th>
                     <td>
                     <b>4%</b>
                     </td>
                 </tr>
                 <tr>
-                    <td class="blank-cell">
+                    <td className="blank-cell">
                     </td>
                     <th>
-                    Sugars
-                    14g
+                    Sugars {sugars != null && sugars}g
                     </th>
                     <td>
                     </td>
                 </tr>
-                <tr class="thick-end">
+                <tr className="thick-end">
                     <th colspan="2">
-                    <b>Protein</b> {proteinAmount}g
+                    <b>Protein</b> {protein != null && protein}g
                     </th>
                     <td>
                     </td>
@@ -127,7 +134,7 @@ export default function NutritionLabel({nutrients}) {
                 </tbody>
             </table>
 
-            <table class="performance-facts__table--grid">
+            <table className="performance-facts__table--grid">
                 <tbody>
                 <tr>
                     <td colspan="2">
@@ -139,7 +146,7 @@ export default function NutritionLabel({nutrients}) {
                     0%
                     </td>
                 </tr>
-                <tr class="thin-end">
+                <tr className="thin-end">
                     <td colspan="2">
                     Calcium
                     10%
@@ -152,9 +159,9 @@ export default function NutritionLabel({nutrients}) {
                 </tbody>
             </table>
 
-            <p class="small-info">* Percent Daily Values are based on a 2,000 calorie diet. Your daily values may be higher or lower depending on your calorie needs:</p>
+            <p className="small-info">* Percent Daily Values are based on a 2,000 calorie diet. Your daily values may be higher or lower depending on your calorie needs:</p>
 
-            <table class="performance-facts__table--small small-info">
+            <table className="performance-facts__table--small small-info">
                 <thead>
                 <tr>
                     <td colspan="2"></td>
@@ -171,7 +178,7 @@ export default function NutritionLabel({nutrients}) {
                     <td>80g</td>
                 </tr>
                 <tr>
-                    <td class="blank-cell"></td>
+                    <td className="blank-cell"></td>
                     <th>Saturated Fat</th>
                     <td>Less than</td>
                     <td>20g</td>
@@ -195,7 +202,7 @@ export default function NutritionLabel({nutrients}) {
                     <td>375g</td>
                 </tr>
                 <tr>
-                    <td class="blank-cell"></td>
+                    <td className="blank-cell"></td>
                     <th colspan="2">Dietary Fiber</th>
                     <td>25g</td>
                     <td>30g</td>
@@ -203,10 +210,10 @@ export default function NutritionLabel({nutrients}) {
                 </tbody>
             </table>
 
-            <p class="small-info">
+            <p className="small-info">
                 Calories per gram:
             </p>
-            <p class="small-info text-center">
+            <p className="small-info text-center">
                 Fat 9
                 &bull;
                 Carbohydrate 4
