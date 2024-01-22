@@ -63,6 +63,7 @@ const Welcome = ({username, goals, change}) => {
                     <Button onClick = {() => change("schedule")}>Edit Your Schedule</Button>
                     <Button onClick = {() => change("addMeal")}>Add a Meal</Button>
                     <Button onClick = {() => change("addIngredient")}>(Admin) Add Ingredient to Database</Button>
+                    <Button onClick = {() => change("addIngredient")}>(Admin) Add A Meal to Database</Button>
                 </Col>
                 <Col xs = {6} style={{ textAlign: 'center' }}>
                     <h2>Meals</h2>
@@ -85,6 +86,7 @@ export default function UserDashboard({username, goals}){
             {mode === "addMeal" && <MealLogger back = {(e => setMode(e))} />}
             {mode === "browseMeals" && <BrowseMeals back = {(e => setMode(e))} />}
             {mode === "addIngredient" && <AddIngredient back = {(e) => setMode(e)} />}
+            {mode === "addMeal" && <AddMeal back = {(e) => setMode(e)} />}
         </>
     
     );
