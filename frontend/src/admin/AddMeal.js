@@ -6,7 +6,7 @@ export default function AddMeal({back}){
 
     return (
         <Container>
-
+                
         </Container>
     )
 }
