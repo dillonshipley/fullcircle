@@ -46,6 +46,7 @@ export default function AddIngredient({back}){
         console.log(nutrients);
         setSelectedNutrients(nutrients);
         setSelectedIngredientID(FDCID);
+        console.log(name);
         setSelectedIngredientName(name);
         setMeat(false);
         setDairy(false);
@@ -53,12 +54,13 @@ export default function AddIngredient({back}){
     }
 
     const addIDToDB = async(event) => {
-
+        event.preventDefault();
         var inputElement = document.getElementById("ingredientName");
         var inputValue = inputElement.value;
+        console.log(inputValue);
         if(inputValue != "")
             setSelectedIngredientName(inputValue);
-        event.preventDefault();
+        
         const response = await fetch(process.env.REACT_APP_API_URL + "tf/addIDToDB", {
             method: 'POST',
             headers: {

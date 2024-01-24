@@ -10,16 +10,17 @@ export default function NutritionLabel({nutrients}) {
         )
     }
     if(nutrients && Array.isArray(nutrients)){
-        calories =          nutrients.find(element => element.name === "Calories")?.amount;
-        totalfats =         nutrients.find(element => element.name === "Total Fat")?.amount;
-        transfat =          nutrients.find(element => element.name === "Trans Fat")?.amount ?? null;
-        saturatedfat =      nutrients.find(element => element.name === "Saturated Fat")?.amount;
-        cholesterol =       nutrients.find(element => element.name === "Cholesterol")?.amount;
-        sodium =            nutrients.find(element => element.name === "Sodium")?.amount;
-        carbohydrates =     nutrients.find(element => element.name === "Carbohydrates")?.amount;
-        dietaryfiber =      nutrients.find(element => element.name === "Dietary Fiber")?.amount;
-        sugars =            nutrients.find(element => element.name === "Sugars")?.amount;
-        protein =           nutrients.find(element => element.name === "Protein")?.amount;
+        calories =          nutrients.find(element => element.name === "calories")?.amount;
+        console.log("from nutrition label " + nutrients);
+        totalfats =         nutrients.find(element => element.name === "totalfats")?.amount;
+        transfat =          nutrients.find(element => element.name === "transfat")?.amount ?? null;
+        saturatedfat =      nutrients.find(element => element.name === "saturatedfat")?.amount;
+        cholesterol =       nutrients.find(element => element.name === "cholesterol")?.amount;
+        sodium =            nutrients.find(element => element.name === "sodium")?.amount;
+        carbohydrates =     nutrients.find(element => element.name === "carbohydrates")?.amount;
+        dietaryfiber =      nutrients.find(element => element.name === "dietaryfiber")?.amount;
+        sugars =            nutrients.find(element => element.name === "sugars")?.amount;
+        protein =           nutrients.find(element => element.name === "protein")?.amount;
         amount =            nutrients.find(element => element.name === "Total")?.amount;
         amountUnit =        nutrients.find(element => element.name === "Total")?.unit;
     }

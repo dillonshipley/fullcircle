@@ -2,9 +2,9 @@ import React, {useEffect, useState} from 'react';
 
 import AddSchedule from '../tools/AddSchedule';
 import EditGoals from '../tools/EditGoals';
-import MealLogger from '../tools/MealLogger.js';
 import BrowseMeals from './BrowseMeals.js';
 import AddIngredient from '../admin/AddIngredient.js';
+import AddMeal from '../admin/AddMeal.js';
 
 import 'chart.js/auto';
 
@@ -61,9 +61,8 @@ const Welcome = ({username, goals, change}) => {
                     <Button onClick = {() => change("goals")}>Edit Your Goals or Personal Information</Button>
                     <p></p>
                     <Button onClick = {() => change("schedule")}>Edit Your Schedule</Button>
-                    <Button onClick = {() => change("addMeal")}>Add a Meal</Button>
+                    <Button onClick = {() => change("addMeal")}>(Admin) Add a Meal</Button>
                     <Button onClick = {() => change("addIngredient")}>(Admin) Add Ingredient to Database</Button>
-                    <Button onClick = {() => change("addIngredient")}>(Admin) Add A Meal to Database</Button>
                 </Col>
                 <Col xs = {6} style={{ textAlign: 'center' }}>
                     <h2>Meals</h2>
@@ -83,10 +82,9 @@ export default function UserDashboard({username, goals}){
             {mode === "welcome" && <Welcome username = {username} goals = {goals} change = {(e) => setMode(e)}/>}
             {mode === "schedule" && <AddSchedule back = {(e) => setMode(e)}/>}
             {mode === "goals" && <EditGoals back = {(e) => setMode(e)} currentInfo={{"weight": 150}}/>}
-            {mode === "addMeal" && <MealLogger back = {(e => setMode(e))} />}
+            {mode === "addMeal" && <AddMeal back = {(e => setMode(e))} />}
             {mode === "browseMeals" && <BrowseMeals back = {(e => setMode(e))} />}
             {mode === "addIngredient" && <AddIngredient back = {(e) => setMode(e)} />}
-            {mode === "addMeal" && <AddMeal back = {(e) => setMode(e)} />}
         </>
     
     );
