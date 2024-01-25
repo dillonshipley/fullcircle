@@ -8,7 +8,6 @@ export default class BrowseMeals extends React.Component{
     }
     
     async loadMeals() {
-        console.log("load");
         const response = await fetch(process.env.REACT_APP_API_URL + "get/mealList", {
             method: 'GET',
             headers: {

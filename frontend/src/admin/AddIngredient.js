@@ -1,5 +1,5 @@
 import React, {useState, useCallback} from 'react';
-import {Container, Row, Form, FormControl, Col, Button} from 'react-bootstrap';
+import {Container, Row, Form, FormControl, Col, Button, InputGroup} from 'react-bootstrap';
 import NutritionLabel from '../tools/NutritionLabel';
 
 
@@ -9,11 +9,12 @@ export default function AddIngredient({back}){
     const [selectedIngredientID, setSelectedIngredientID] = useState(null);
     const [selectedIngredientName, setSelectedIngredientName] = useState(null);
     const [selectedNutrients, setSelectedNutrients] = useState(null);
+    const [selectedPortions, setSelectedPortions] = useState(null);
+    const [insertedPortion, setInsertedPortion] = useState(null);
 
     const [meat, setMeat] = useState(false);
     const [dairy, setDairy] = useState(false);
-    const [storeAmount, setStoreAmount] = useState(false);
-
+    const [wholeIngredient, setWholeIngredient] = useState(false);
     const [message, setMessage] = useState(null);
     
     const search = async (event) => {
@@ -28,7 +29,6 @@ export default function AddIngredient({back}){
         });
 
         const x = await response.json();
-        console.log(x);
         const array = x.map(x => [x.description, x.id]);
         setIngredients(array);
     }
@@ -42,15 +42,14 @@ export default function AddIngredient({back}){
             body: JSON.stringify({"id": FDCID})
         });
 
-        const nutrients = await response.json();
-        console.log(nutrients);
-        setSelectedNutrients(nutrients);
-        setSelectedIngredientID(FDCID);
-        console.log(name);
+        const food = await response.json();
+        setSelectedNutrients(food.nutrients);
+        setSelectedPortions(food.portions);
+        setSelectedIngredientID(FDCID);;
         setSelectedIngredientName(name);
         setMeat(false);
         setDairy(false);
-        setStoreAmount(false);
+        setWholeIngredient(false);
     }
 
     const addIDToDB = async(event) => {
@@ -72,8 +71,8 @@ export default function AddIngredient({back}){
                 "attributes": [
                     {"name": "Meat", "value": meat},
                     {"name": "Dairy", "value": dairy},
-                    {"name": "StoreAmount", "value": storeAmount}
-                ]})
+                ],
+                "portion": {"portion": insertedPortion, "whole": wholeIngredient}})
         });
         if(!response.ok)
             setMessage(selectedIngredientName + " could not be added to the database.");
@@ -91,7 +90,7 @@ export default function AddIngredient({back}){
                     type="text"
                     id = "ingredientName"
                     placeholder={selectedIngredientName} className="mt-5"
-                ></input>
+                />
                 <Form.Check
                         type="checkbox"
                         label="Meat Product?"
@@ -104,22 +103,42 @@ export default function AddIngredient({back}){
                         checked={dairy}
                         onChange={() => setDairy(!dairy)}
                     />
+
+
+                <h3 className="mt-5">Portion to insert:</h3>
+                <InputGroup>
+                {selectedPortions.map((portion, index) => (
+                    <div key = {index} style={{ display: 'block', width: "100%" }}>
+                        <p></p>
+                        <Form.Check
+                            name = "selectedPortion"
+                            checked = {insertedPortion == portion.description}
+                            label = {`${portion.description} (${portion.grams}g)`}
+                            onChange = {() => setInsertedPortion(portion.description)}             
+                        />
+                        <br/ >
+                    </div>
+
+                ))}
+
                 <Form.Check
-                        type="checkbox"
-                        label="Is this a whole item (that can be purchased individually)"
-                        checked={storeAmount}
-                        onChange={() => setStoreAmount(!storeAmount)}
-                    />
-                <Button type = "submit">Add to Database</Button>
+                    type="checkbox"
+                    label="Is this a whole item (that can be purchased individually)"
+                    checked={wholeIngredient}
+                    onChange={() => setWholeIngredient(!wholeIngredient)}
+                />
+
+                </InputGroup>
+                <Button className="mt-5" type = "submit">Add to Database</Button>
             </Form>
         )
     }
 
     return (
         <>
-            <Container>
+            <Container fluid>
                 <Button onClick = {() => back("welcome")}>Back</Button>
-                <Row>
+                <Row className = "ml-5 mr-5 mt-5">
                     <Col>
                         <Form onSubmit ={(e) => search(e)}>
                             <Form.Group>
@@ -137,8 +156,10 @@ export default function AddIngredient({back}){
                     </Col>
                     <Col className="justify-content-center">
                         <Row>
-                            <Col>{selectedNutrients != null && <NutritionLabel nutrients={selectedNutrients}/>}</Col>
-                            <Col>{selectedNutrients != null && <Attributes />}</Col>
+                            <Col>{selectedNutrients != null && <NutritionLabel nutrients={selectedNutrients} amount = {"grams"} grams = {100}/>}</Col>
+                            <Col>
+                                {(selectedNutrients != null && selectedPortions != null) && <Attributes />}
+                            </Col>
                         </Row>
                         {message != null && message}
                     </Col>

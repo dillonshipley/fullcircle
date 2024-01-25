@@ -28,7 +28,6 @@ function App() {
         const x = await response.json();
       setUsername(x.user[0].username)
       setGoals(x.goals[0]);
-      console.log(x.goals[0]);
     }
 
 
