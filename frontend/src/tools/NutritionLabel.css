@@ -1,5 +1,5 @@
 .image {
-    width: 250px;
+    width: 275px;
     float: left;
     margin: 20px;
   }
@@ -15,7 +15,7 @@
     border: 1px solid black;
     margin: 20px;
     float: left;
-    width: 325px;
+    width: 350px;
     padding: 0.5rem;
     table {
       border-collapse: collapse;

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import './NutritionLabel.css';
 
 export default function NutritionLabel({nutrients, amount, grams}) {
@@ -27,8 +27,9 @@ export default function NutritionLabel({nutrients, amount, grams}) {
       
         nutrientNames.forEach((nutrientName) => {
             let x = nutrients.find(element => element.name === nutrientName)?.amount ?? 0;
-            if(x != null && x != undefined){
+            if(x !== null && x !== undefined){
                 x = grams * (x / 100);
+                x = x.toFixed(2);
                 nutrientsInfo[nutrientName] = x;
             }
 
@@ -53,7 +54,7 @@ export default function NutritionLabel({nutrients, amount, grams}) {
                 <tbody>
                 <tr>
                     <th colSpan="2">
-                    <b>Calories</b> {nutrientsInfo.calories != null && nutrientsInfo.calories.toFixed(2)}
+                    <b>Calories </b>{nutrientsInfo.calories != null && nutrientsInfo.calories}
                     </th>
                     <td>
                     Calories from Fat {(nutrientsInfo.totalfats * 9).toFixed(2)}
