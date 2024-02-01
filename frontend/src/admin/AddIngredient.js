@@ -2,7 +2,6 @@ import React, {useState, useCallback} from 'react';
 import {Container, Row, Form, FormControl, Col, Button, InputGroup} from 'react-bootstrap';
 import NutritionLabel from '../tools/NutritionLabel';
 
-
 export default function AddIngredient({back}){
     const [term, setSearchTerm] = useState(null);
     const [ingredients, setIngredients] = useState(null);

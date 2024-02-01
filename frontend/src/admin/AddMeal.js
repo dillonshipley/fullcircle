@@ -1,165 +1,9 @@
 
 import {Form, Button, Container, Row, Col} from 'react-bootstrap';
 import { useState, Component } from 'react';
-import NutritionLabel from '../tools/NutritionLabel';
 
-function MealToIngredient({allIngredients, finalize}){
-    const [variableAmount, setVariableAmount] = useState(false);
-    const [nutrients, setNutrients] = useState(false); 
-    const [allPortions, setAllPortions] = useState(null); 
-    const [selectedPortion, setSelectedPortion] = useState(null);
-    const [amount, setAmount] = useState(1);
 
-    const [errorMessage, setErrorMessage] = useState("");
-    const [selectedIngredientKey, setSelectedIngredientKey] = useState(0);
-    const [selectedIngredientName, setSelectedIngredientName] = useState("");
-    
-    const getIngredient = async(name) => {
-        const ingredientKey = allIngredients.find(item => item.ingredientName === name).ingredientKey;
-        setSelectedIngredientKey(ingredientKey);
-        setSelectedIngredientName(name);
-        console.log("Executing get/IngredientByKey API Call with key " + ingredientKey + "...");
-        const response = await fetch(process.env.REACT_APP_API_URL + "get/ingredientByKey", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({"ingredientKey": ingredientKey})
-
-        });
-        if(!response.ok)
-            console.log(`Getting ingredient key ${ingredientKey} failed!`)
-
-        const data = await response.json();
-        const nutrients = Object.entries(data.nutrients)
-            .filter(([key, value]) => typeof value === 'number') // Filter out non-numeric values
-            .map(([name, amount]) => ({ name, amount }));
-
-        setNutrients(nutrients);
-        setAllPortions(data.portions);
-        setSelectedPortion(null);
-    }
-
-    const changeIngredient = (event) => {
-        const newValue = event.target.value;
-        getIngredient(newValue);
-    }
-
-    const changePortion = (event) => {
-        let newValue = event.target.value;
-        newValue = allPortions.find(item => item.name === newValue);
-        setSelectedPortion(newValue);
-    }
-
-    const changeAmount = (event) => {
-        let newValue = event.target.value;
-        setAmount(newValue);
-    }
-
-    const submitIngredient = () => {
-        if(amount === 0){
-            setErrorMessage("Amount is 0!");
-            return;
-        } else if(selectedPortion === ""){
-            setErrorMessage("Portion not selected!");
-            return;
-        } else if (selectedIngredientKey === 0 || selectedIngredientKey === null){
-            setErrorMessage("Ingredient not selected!");
-        } else {
-            const data = {
-                "ingredientKey": selectedIngredientKey,
-                "name": selectedIngredientName,
-                "portion": selectedPortion,
-                "amount": amount
-            }
-            finalize(data);
-        }
-    }
-
-    return (
-        <Row>
-            <Col>
-                <div style = {{border: '1px solid black'}}>
-                    {/*dropdown with all ingredients in the system*/}
-                    <Form.Group>
-                        <Form.Label className = "ml-5">Ingredient</Form.Label>
-                        <Form.Control
-                        as="select"
-                        onChange= {(e) => changeIngredient(e)}
-                        style={{ width: '80%' }}
-                        className = "ml-5"
-                        >
-                            <option value = ""></option>
-                            {/* Assuming availableIngredients is an array of available ingredients */}
-                            {(allIngredients != null) && allIngredients.map((ingredient, index) => (
-                                <option key = {index}>{ingredient.ingredientName}</option>
-                            ))}
-                        </Form.Control>
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>Is amount variable?</Form.Label>
-                        <Form.Control
-                            type = "checkbox"
-                            onClick = {() => setVariableAmount(!variableAmount)}
-                            />
-                    </Form.Group>
-                    {variableAmount &&
-                        <Form.Group>
-                            <Form.Label>Ingredient amount</Form.Label>
-                            <Form.Control
-                                type = "text"
-                                placeholder = "From"
-                                autoComplete = "off" />
-                            <Form.Control
-                                type = "text"
-                                placeholder = "To"
-                                autoComplete = "off" />
-
-                        </Form.Group>
-
-                    }
-                    {!variableAmount &&
-                    <Form.Group>
-                        <Form.Label className = "ml-5">Ingredient amount</Form.Label>
-                        <Form.Control
-                        type = "text"
-                        placeholder = "Enter an amount"
-                        value = {amount}
-                        onChange = {changeAmount}
-                        style={{ width: '80%' }}
-                        className = "ml-5"
-                        autoComplete = "off" />
-                    </Form.Group>
-
-                    }
-                    <Form.Group>
-                        <Form.Label className = "ml-5 pt-3">Ingredient amount unit</Form.Label>
-                        <Form.Control
-                            as="select"
-                            onChange= {(e) => changePortion(e)}
-                            value = {selectedPortion?.name ?? ""}
-                            style={{ width: '80%' }}
-                            className = "ml-5"
-                        >
-                            <option value = ""></option>
-                            {/* Assuming availableIngredients is an array of available ingredients */}
-                            {(allPortions != null) && allPortions.map((x, index) => (
-                                <option key = {index} value = {x.name}>{x.name + " (" + x.grams + "g)"}</option>
-                            ))}
-                        </Form.Control>
-                    </Form.Group>
-                    <Button>Remove Ingredient</Button>
-                 <Button onClick = {() => submitIngredient()}>Finalize</Button>
-                 <p>{errorMessage}</p>
-                </div>
-            </Col>
-            <Col>
-                {(selectedPortion != null && nutrients != null) && <NutritionLabel nutrients = {nutrients} amount = {selectedPortion.name} grams = {selectedPortion.grams * amount}/>}
-            </Col>
-        </Row>
-
-    );
-}
+import MealToIngredient from './MealToIngredient';
 
 export default class MealLogger extends Component{
 
@@ -169,6 +13,7 @@ export default class MealLogger extends Component{
         this.state = {
             ingredients: [],
             openIngredient: true,
+            openIngredient: "null",
             allIngredients: null
         }
         this.back = props.back;
@@ -198,14 +43,25 @@ export default class MealLogger extends Component{
 
 
 
-    setIngredient(data){
+    addIngredient(data){
         console.log(data);
         let ingredients = this.state.ingredients;
         ingredients.push(data);
         this.setState({
             ingredients: ingredients,
-            openIngredient: false
+            openIngredient: false,
+            openIngredientKey: "null"
         });
+    }
+
+    setOpenIngredient(ingredientKey){
+        const updatedIngredients = [...this.state.ingredients];
+        const openIngredient = updatedIngredients.find(ingredient => ingredient.ingredientKey === ingredientKey);
+        const indexToRemove = updatedIngredients.findIndex(ingredient => ingredient.ingredientKey === ingredientKey);
+        if (indexToRemove !== -1) 
+            updatedIngredients.splice(indexToRemove, 1); // Remove 1 element at indexToRemove
+
+        this.setState({ ingredients: updatedIngredients, openIngredient: true, openIngredient: openIngredient});// Update the state with the modified array
     }
 
     updateName({key, name}){
@@ -220,6 +76,15 @@ export default class MealLogger extends Component{
 
     displayInfo(){
         console.log(this.state.ingredients);
+    }
+
+    mealIngredient = (item) => {
+        return(
+            <Container style ={{border: "1px solid black", borderRadius: "5px", width: "50%", height: "50px"}} className="pb-5 d-flex flex-direction-row">
+                <p style={{fontSize: "20px"}}>{item.amount + " " + item.name + "\t " + item.portion.name + " (" + item.portion.grams + "g)"}</p>
+                {!this.state.openIngredient && <Button style ={{height: "50px", width: "100px"}} onClick={() => this.setOpenIngredient(item.ingredientKey)}>Edit</Button>}
+            </Container>
+        )
     }
 
     render(){
@@ -238,13 +103,14 @@ export default class MealLogger extends Component{
                                 </Form.Group>
                     <Container className = "pt-5">
                         {this.state.ingredients != null && this.state.ingredients.map((item) => 
-                            <div>{item.name} {item.amount}</div>
+                           this.mealIngredient(item)
                         )}
                         {/*loop - for x in ingredientCount, display an ingredient*/}
                         {this.state.openIngredient &&
                             <MealToIngredient  
                                 allIngredients={this.state.allIngredients}
-                                finalize = {(data) => this.setIngredient(data)}
+                                finalize = {(data) => this.addIngredient(data)}
+                                editIngredient={this.state.openIngredient}
                             />
                         }
 

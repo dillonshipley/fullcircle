@@ -1,7 +1,7 @@
 import React from 'react';
 import './NutritionLabel.css';
 
-export default function NutritionLabel({nutrients, amount, grams}) {
+export default function NutritionLabel({nutrients, amount, amountUnit, grams}) {
 
     let nutrientsInfo = {
         calories: null,
@@ -47,7 +47,7 @@ export default function NutritionLabel({nutrients, amount, grams}) {
                 <thead>
                 <tr>
                     <th colSpan="3" className="small-info">
-                    {"Amount Per Serving: " + amount + " (" + grams + "g)"}
+                    {"Amount Per Serving: " + amount + " " + amountUnit + " (" + grams + "g)"}
                     </th>
                 </tr>
                 </thead>
