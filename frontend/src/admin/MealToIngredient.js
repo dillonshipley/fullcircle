@@ -3,17 +3,21 @@ import {Container, Row, Form, FormControl, Col, Button, InputGroup} from 'react-
 import NutritionLabel from '../tools/NutritionLabel';
 
 export default function MealToIngredient({allIngredients, finalize, editIngredient = "null"}){
-    const [variableAmount, setVariableAmount] = useState(false);
-    const [nutrients, setNutrients] = useState(false); 
-    const [allPortions, setAllPortions] = useState(null); 
-    const [selectedPortion, setSelectedPortion] = useState(null);
-    const [amount, setAmount] = useState(1);
-
-    const [errorMessage, setErrorMessage] = useState("");
     const [selectedIngredientKey, setSelectedIngredientKey] = useState(0);
     const [selectedIngredientName, setSelectedIngredientName] = useState("");
-    
+    const [loaded, setLoaded] = useState(false);
 
+    const [nutrients, setNutrients] = useState(false); 
+    
+    const [variableAmount, setVariableAmount] = useState(false);
+    const [amount, setAmount] = useState(1);
+    const [amountFrom, setAmountFrom] = useState(0)
+    const [amountTo, setAmountTo] = useState(0);
+
+    const [allPortions, setAllPortions] = useState(null); 
+    const [selectedPortion, setSelectedPortion] = useState(null);
+
+    const [errorMessage, setErrorMessage] = useState("");
 
     //When the Meal to Ingredient is loaded from an already-existing ingredient in the meal, execute this
     useEffect(() => {
@@ -25,11 +29,15 @@ export default function MealToIngredient({allIngredients, finalize, editIngredie
                     await getIngredient(editIngredient.name, editIngredient.ingredientKey); // Call getIngredient and wait for it to complete
         
                     // Once getIngredient is done, proceed with state updates
-                    if (selectedPortion == null) {
-                        console.log("error null: edit ingredient portion is " + editIngredient.portion);
-                    }
                     setAmount(editIngredient.amount);
+                    if(editIngredient.amountTo != 0){
+                        console.log(true);
+                        setVariableAmount(true);
+                    }
+                    setAmountTo(editIngredient.amountTo);
+                    setAmountFrom(editIngredient.amountFrom);
                     setSelectedPortion(editIngredient.portion);
+                    setLoaded(true)
                 }
             } catch (error) {
                 console.error("Error fetching ingredient:", error);
@@ -38,11 +46,11 @@ export default function MealToIngredient({allIngredients, finalize, editIngredie
     
         fetchData(); // Call the async function
     
-    }, [editIngredient, allIngredients, selectedPortion]);
+    }, [editIngredient, allIngredients]);
 
     const getIngredient = async(name, ingredientParam = "null") => {
         let ingredientKey;
-        if(ingredientParam == "null")
+        if(ingredientParam == "null" || loaded)
             ingredientKey = allIngredients.find(item => item.ingredientName === name).ingredientKey;
         else
             ingredientKey = ingredientParam;
@@ -68,6 +76,11 @@ export default function MealToIngredient({allIngredients, finalize, editIngredie
         setNutrients(nutrients);
         setAllPortions(data.portions);
         setSelectedPortion(null);
+        
+        setAmount(0);
+        setAmountFrom(0);
+        setAmountTo(0);
+        setVariableAmount(false);
     }
 
     const changeIngredient = (event) => {
@@ -81,9 +94,18 @@ export default function MealToIngredient({allIngredients, finalize, editIngredie
         setSelectedPortion(newValue);
     }
 
-    const changeAmount = (event) => {
+    const handleChange = (event, setter) =>{
         let newValue = event.target.value;
-        setAmount(newValue);
+        setter(newValue);
+    }
+    
+
+    const setVariable = (value) => {
+        if(value == false){
+            setAmountTo(0)
+            setAmountFrom(0)
+        }
+        setVariableAmount(value);
     }
 
     const submitIngredient = () => {
@@ -99,8 +121,10 @@ export default function MealToIngredient({allIngredients, finalize, editIngredie
             const data = {
                 "ingredientKey": selectedIngredientKey,
                 "name": selectedIngredientName,
-                "portion": selectedPortion,
-                "amount": amount
+                "portion": selectedPortion.storeAmountKey,
+                "amount": amount,
+                "amountFrom": amountFrom,
+                "amountTo": amountTo
             }
             finalize(data);
         }
@@ -127,35 +151,44 @@ export default function MealToIngredient({allIngredients, finalize, editIngredie
                             ))}
                         </Form.Control>
                     </Form.Group>
-                    <Form.Group>
+                    <Form.Group  style={{ width: '80%' }} className = "ml-5">
                         <Form.Label>Is amount variable?</Form.Label>
                         <Form.Control
                             type = "checkbox"
-                            onClick = {() => setVariableAmount(!variableAmount)}
+                            checked = {variableAmount}
+                            onClick = {() => setVariable(!variableAmount)}
                             />
                     </Form.Group>
                     {variableAmount &&
-                        <Form.Group>
+                        <Form.Group style={{ width: '80%' }} className = "ml-5 pt-5">
                             <Form.Label>Ingredient amount</Form.Label>
-                            <Form.Control type = "text" placeholder = "From" autoComplete = "off" />
-                            <Form.Control type = "text" placeholder = "To" autoComplete = "off" />
+                            <Form.Control 
+                                type = "text" 
+                                placeholder = "From" 
+                                value = {amountFrom}
+                                onChange={(event) => handleChange(event, setAmountFrom)}
+                                autoComplete = "off" 
+                            />
+                            <Form.Control 
+                                type = "text" 
+                                placeholder = "To" 
+                                value = {amountTo}
+                                onChange={(event) => handleChange(event, setAmountTo)}
+                                autoComplete = "off" 
+                            />
                         </Form.Group>
 
                     }
-                    {!variableAmount &&
-                    <Form.Group>
-                        <Form.Label className = "ml-5">Ingredient amount</Form.Label>
+                    <Form.Group style={{ width: '80%' }} className = "ml-5 pt-5">
+                        <Form.Label >{!variableAmount && "Ingredient amount"}{variableAmount && "Standard Ingredient Amount"}</Form.Label>
                         <Form.Control
                         type = "text"
                         placeholder = "Enter an amount"
                         value = {amount}
-                        onChange = {changeAmount}
-                        style={{ width: '80%' }}
-                        className = "ml-5"
+                        onChange = {(event) => handleChange(event, setAmount)}
                         autoComplete = "off" />
                     </Form.Group>
 
-                    }
                     <Form.Group>
                         <Form.Label className = "ml-5 pt-3">Ingredient amount unit</Form.Label>
                         <Form.Control
@@ -172,9 +205,9 @@ export default function MealToIngredient({allIngredients, finalize, editIngredie
                             ))}
                         </Form.Control>
                     </Form.Group>
-                    <Button>Remove Ingredient</Button>
-                 <Button onClick = {() => submitIngredient()}>Finalize</Button>
-                 <p>{errorMessage}</p>
+                    <Button className = "mt-5">Remove Ingredient</Button>
+                    <Button className = "mt-5" onClick = {() => submitIngredient()}>Finalize</Button>
+                     <p>{errorMessage}</p>
                 </div>
             </Col>
             <Col>

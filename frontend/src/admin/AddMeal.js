@@ -11,6 +11,7 @@ export default class MealLogger extends Component{
         super(props);
         //I need a key/value approach to handle updating names
         this.state = {
+            mealName: '',
             ingredients: [],
             openIngredient: true,
             openIngredient: "null",
@@ -64,14 +65,12 @@ export default class MealLogger extends Component{
         this.setState({ ingredients: updatedIngredients, openIngredient: true, openIngredient: openIngredient});// Update the state with the modified array
     }
 
-    updateName({key, name}){
-
-    }
-
-    removeIngredient({key}){
-        //remove the ingredient with the specified key from the list of ingredients
-        // re render display?
-
+    removeIngredient(ingredientKey){
+        let updatedIngredients = [...this.state.ingredients];
+        console.log(ingredientKey);
+        updatedIngredients = updatedIngredients.filter(obj => obj.ingredientKey != ingredientKey);
+        console.log(updatedIngredients);
+        this.setState({ingredients: updatedIngredients});
     }
 
     displayInfo(){
@@ -83,8 +82,35 @@ export default class MealLogger extends Component{
             <Container style ={{border: "1px solid black", borderRadius: "5px", width: "50%", height: "50px"}} className="pb-5 d-flex flex-direction-row">
                 <p style={{fontSize: "20px"}}>{item.amount + " " + item.name + "\t " + item.portion.name + " (" + item.portion.grams + "g)"}</p>
                 {!this.state.openIngredient && <Button style ={{height: "50px", width: "100px"}} onClick={() => this.setOpenIngredient(item.ingredientKey)}>Edit</Button>}
+                <Button style={{ height: "50px", width: "100px" }} onClick={() => this.removeIngredient(item.ingredientKey)}>Remove</Button>            
             </Container>
         )
+    }
+
+    changeName = (event) => {
+        this.setState({ mealName: event.target.value });
+    }
+
+    submitMeal = async () => {
+        console.log(this.state.mealName);
+        console.log(this.state.ingredients);
+        const response = await fetch(process.env.REACT_APP_API_URL + "post/meal", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                    "ingredients": this.state.ingredients,
+                    "name": this.state.mealName, 
+                    "type": ''
+            })
+        });
+        this.setState({
+            mealName: '',
+            ingredients: [],
+            openIngredient: true,
+            openIngredient: "null",
+        });
     }
 
     render(){
@@ -96,9 +122,11 @@ export default class MealLogger extends Component{
                     <Form.Group>
                                     <Form.Label>Meal name</Form.Label>
                                     <Form.Control
-                                    type="text"
-                                    placeholder={"Name of the meal"}
-                                    autoComplete="off"
+                                        type="text"
+                                        value={this.state.mealName}
+                                        onChange = {this.changeName}
+                                        placeholder={"Name of the meal"}
+                                        autoComplete="off"
                                     />
                                 </Form.Group>
                     <Container className = "pt-5">
@@ -117,8 +145,8 @@ export default class MealLogger extends Component{
                         <br></br>
 
                     </Container>
-                    <Button onClick = {() => this.displayInfo()}>display state info</Button>
                     {!this.state.openIngredient && <Button onClick = {() => this.setState({openIngredient: true})}>Add Ingredient</Button>}
+                    {this.state.ingredients.length > 0 && <Button onClick = {() => this.submitMeal()}>Add Meal</Button>}
                 </Form>
             </Container>
 
