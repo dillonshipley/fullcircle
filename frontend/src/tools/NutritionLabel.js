@@ -1,5 +1,6 @@
 import React from 'react';
 import './NutritionLabel.css';
+import pluralize from 'pluralize';
 
 export default function NutritionLabel({nutrients, amount, amountUnit, grams}) {
 
@@ -36,6 +37,18 @@ export default function NutritionLabel({nutrients, amount, amountUnit, grams}) {
         });
       }
 
+      function removeFirstTwoCharacters(str) {
+        if (str.startsWith('1 ')) {
+            let newString = str.substring(2);
+            if(amount !== 1)
+                return pluralize(newString);
+            else
+                return newString; 
+        } else {
+            return pluralize(str);
+        }
+    }
+
     return (
         <>
             <section className="performance-facts">
@@ -47,7 +60,7 @@ export default function NutritionLabel({nutrients, amount, amountUnit, grams}) {
                 <thead>
                 <tr>
                     <th colSpan="3" className="small-info">
-                    {"Amount Per Serving: " + amount + " " + amountUnit + " (" + grams + "g)"}
+                    {amountUnit != null && "Amount Per Serving: " + amount + " " + removeFirstTwoCharacters(amountUnit) + " (" + grams + "g)"}
                     </th>
                 </tr>
                 </thead>

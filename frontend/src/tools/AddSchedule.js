@@ -125,7 +125,7 @@ export default class AddSchedule extends React.Component{
         let userKey = "239894c2-4887-4de7-bf7c-4651e70c7090";
         let goalKey = "50dd8c7b-3b12-49e1-a192-fde441ace0ac";
 
-        const response = await fetch(process.env.REACT_APP_API_URL + "user/schedule", {
+        const response = await fetch(process.env.REACT_APP_API_URL + "users/schedule", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

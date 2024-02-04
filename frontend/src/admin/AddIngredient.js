@@ -19,7 +19,7 @@ export default function AddIngredient({back}){
     const search = async (event) => {
         event.preventDefault();
         console.log("Executing tf/ingredientListFDC API Call...")
-        const response = await fetch(process.env.REACT_APP_API_URL + "tf/searchByNameFDC", {
+        const response = await fetch(process.env.REACT_APP_API_URL + "adminRoutes/searchByNameFDC", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ export default function AddIngredient({back}){
     }
 
     const selectIngredient = async (name, FDCID) => {
-        const response = await fetch(process.env.REACT_APP_API_URL + "tf/searchByIDFDC", {
+        const response = await fetch(process.env.REACT_APP_API_URL + "adminRoutes/searchByIDFDC", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export default function AddIngredient({back}){
         if(inputValue != "")
             setSelectedIngredientName(inputValue);
         
-        const response = await fetch(process.env.REACT_APP_API_URL + "tf/addIDToDB", {
+        const response = await fetch(process.env.REACT_APP_API_URL + "adminRoutes/addIDToDB", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

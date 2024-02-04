@@ -17,7 +17,7 @@ function App() {
 
     async function getGoal(newUserKey){
       console.log("Executing user/currentGoal API Call...");
-      const response = await fetch(process.env.REACT_APP_API_URL + "user/currentGoal", {
+      const response = await fetch(process.env.REACT_APP_API_URL + "users/currentGoal", {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',

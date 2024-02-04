@@ -57,7 +57,7 @@ export default function MealToIngredient({allIngredients, finalize, editIngredie
         setSelectedIngredientKey(ingredientKey);
         setSelectedIngredientName(name);
         console.log("Executing get/IngredientByKey API Call with key " + ingredientKey + "...");
-        const response = await fetch(process.env.REACT_APP_API_URL + "get/ingredientByKey", {
+        const response = await fetch(process.env.REACT_APP_API_URL + "foods/ingredientByKey", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ export default function MealToIngredient({allIngredients, finalize, editIngredie
             const data = {
                 "ingredientKey": selectedIngredientKey,
                 "name": selectedIngredientName,
-                "portion": selectedPortion.storeAmountKey,
+                "portion": selectedPortion,
                 "amount": amount,
                 "amountFrom": amountFrom,
                 "amountTo": amountTo

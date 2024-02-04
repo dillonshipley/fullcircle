@@ -79,7 +79,7 @@ export default class IngredientLogger extends Component{
             'amountUnit':       this.state.AmountUnit
         });
 
-        const response = await fetch(process.env.REACT_APP_API_URL + "post/ingredient", {
+        const response = await fetch(process.env.REACT_APP_API_URL + "foods/ingredient", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

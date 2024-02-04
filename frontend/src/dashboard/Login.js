@@ -12,7 +12,7 @@ export default function Login({login}){
     const handleLogin = async (event) => {
         event.preventDefault();
         console.log("Executing user/login API Call...")
-        const response = await fetch(process.env.REACT_APP_API_URL + "user/login", {
+        const response = await fetch(process.env.REACT_APP_API_URL + "users/login", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ export default function Login({login}){
     const handleSignUp = async (event) => {
         event.preventDefault();
         console.log("works");
-        const response = await fetch(process.env.REACT_APP_API_URL + "user/user", {
+        const response = await fetch(process.env.REACT_APP_API_URL + "users/user", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

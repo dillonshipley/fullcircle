@@ -8,7 +8,7 @@ export default class BrowseMeals extends React.Component{
     }
     
     async loadMeals() {
-        const response = await fetch(process.env.REACT_APP_API_URL + "get/mealList", {
+        const response = await fetch(process.env.REACT_APP_API_URL + "foods/mealList", {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ export default class BrowseMeals extends React.Component{
     render(){
         return(
             <>
-                <Button onClick = {() => this.back("welcome")}>>Back</Button>
+                <Button onClick = {() => this.back("welcome")}>Back</Button>
                 hello
             </>
         );

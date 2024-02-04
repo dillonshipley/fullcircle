@@ -28,7 +28,7 @@ export default class MealLogger extends Component{
 
     async loadIngredients() {
         console.log("Executing get/ingredientList API Call...")
-        const response = await fetch(process.env.REACT_APP_API_URL + "get/ingredientList", {
+        const response = await fetch(process.env.REACT_APP_API_URL + "foods/ingredientList", {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -78,8 +78,9 @@ export default class MealLogger extends Component{
     }
 
     mealIngredient = (item) => {
+        console.log(item.portion);
         return(
-            <Container style ={{border: "1px solid black", borderRadius: "5px", width: "50%", height: "50px"}} className="pb-5 d-flex flex-direction-row">
+            <Container style ={{border: "1px solid black", borderRadius: "5px", width: "70%", height: "50px"}} className="pb-5 d-flex flex-direction-row">
                 <p style={{fontSize: "20px"}}>{item.amount + " " + item.name + "\t " + item.portion.name + " (" + item.portion.grams + "g)"}</p>
                 {!this.state.openIngredient && <Button style ={{height: "50px", width: "100px"}} onClick={() => this.setOpenIngredient(item.ingredientKey)}>Edit</Button>}
                 <Button style={{ height: "50px", width: "100px" }} onClick={() => this.removeIngredient(item.ingredientKey)}>Remove</Button>            
@@ -92,9 +93,12 @@ export default class MealLogger extends Component{
     }
 
     submitMeal = async () => {
-        console.log(this.state.mealName);
-        console.log(this.state.ingredients);
-        const response = await fetch(process.env.REACT_APP_API_URL + "post/meal", {
+        let updatedIngredients = [...this.state.ingredients];
+        for(let i = 0; i < updatedIngredients.length; i++){
+            updatedIngredients[i].portion = updatedIngredients[i].portion.storeAmountKey;
+        }
+
+        const response = await fetch(process.env.REACT_APP_API_URL + "foods/addMeal", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -130,7 +134,7 @@ export default class MealLogger extends Component{
                                     />
                                 </Form.Group>
                     <Container className = "pt-5">
-                        {this.state.ingredients != null && this.state.ingredients.map((item) => 
+                        {this.state.ingredients !== null && this.state.ingredients.map((item) => 
                            this.mealIngredient(item)
                         )}
                         {/*loop - for x in ingredientCount, display an ingredient*/}
