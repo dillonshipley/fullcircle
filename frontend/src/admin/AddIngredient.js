@@ -9,7 +9,7 @@ export default function AddIngredient({back}){
     const [selectedIngredientName, setSelectedIngredientName] = useState(null);
     const [selectedNutrients, setSelectedNutrients] = useState(null);
     const [selectedPortions, setSelectedPortions] = useState(null);
-    const [insertedPortion, setInsertedPortion] = useState(null);
+    const [insertedPortions, setInsertedPortions] = useState([]);
 
     const [meat, setMeat] = useState(false);
     const [dairy, setDairy] = useState(false);
@@ -18,7 +18,7 @@ export default function AddIngredient({back}){
     
     const search = async (event) => {
         event.preventDefault();
-        console.log("Executing tf/ingredientListFDC API Call...")
+        console.log("Executing adminRoutes/searchByNameFDC API Call...")
         const response = await fetch(process.env.REACT_APP_API_URL + "adminRoutes/searchByNameFDC", {
             method: 'POST',
             headers: {
@@ -30,9 +30,11 @@ export default function AddIngredient({back}){
         const x = await response.json();
         const array = x.map(x => [x.description, x.id]);
         setIngredients(array);
+        setInsertedPortions([])
     }
 
     const selectIngredient = async (name, FDCID) => {
+        console.log("Executing adminRoutes/searchByIDFDC API Call...")
         const response = await fetch(process.env.REACT_APP_API_URL + "adminRoutes/searchByIDFDC", {
             method: 'POST',
             headers: {
@@ -40,7 +42,10 @@ export default function AddIngredient({back}){
             },
             body: JSON.stringify({"id": FDCID})
         });
-
+        if(!response.ok){
+            console.log("Search by ID Failed!");
+            return;
+        }
         const food = await response.json();
         setSelectedNutrients(food.nutrients);
         setSelectedPortions(food.portions);
@@ -71,7 +76,8 @@ export default function AddIngredient({back}){
                     {"name": "Meat", "value": meat},
                     {"name": "Dairy", "value": dairy},
                 ],
-                "portion": {"portion": insertedPortion, "whole": wholeIngredient}})
+                "portions": insertedPortions
+            })
         });
         if(!response.ok)
             setMessage(selectedIngredientName + " could not be added to the database.");
@@ -81,6 +87,15 @@ export default function AddIngredient({back}){
             setMessage(selectedIngredientName + " was successfully added to the database!");
 
     }
+
+    const handlePortionChange = (portionDescription) => {
+        const isSelected = insertedPortions.includes(portionDescription);
+        if (isSelected) {
+            setInsertedPortions(insertedPortions.filter(item => item !== portionDescription));
+        } else {
+            setInsertedPortions([...insertedPortions, portionDescription]);
+        }
+    };
 
     const Attributes = () => {
         return (
@@ -111,9 +126,9 @@ export default function AddIngredient({back}){
                         <p></p>
                         <Form.Check
                             name = "selectedPortion"
-                            checked = {insertedPortion == portion.description}
+                            checked = {insertedPortions.includes(portion.description)}
                             label = {`${portion.description} (${portion.grams}g)`}
-                            onChange = {() => setInsertedPortion(portion.description)}             
+                            onChange = {() => handlePortionChange(portion.description)}             
                         />
                         <br/ >
                     </div>
@@ -149,13 +164,17 @@ export default function AddIngredient({back}){
                                 />
                             </Form.Group>
                             {ingredients != null && ingredients.slice(0, 10).map((x, index) => (
-                                <div key = {index} onClick = {() => selectIngredient(x[0], x[1])}>{x[0]}</div>
+                                <div key = {index} 
+                                    style = {{height: "50px", border: "1px solid black"}}
+                                    onClick = {() => selectIngredient(x[0], x[1])}>
+                                        {x[0]}
+                                </div>
                             ))}
                         </Form>
                     </Col>
                     <Col className="justify-content-center">
                         <Row>
-                            <Col>{selectedNutrients != null && <NutritionLabel nutrients={selectedNutrients} amount = {"grams"} grams = {100}/>}</Col>
+                            <Col>{selectedNutrients != null && <NutritionLabel nutrients={selectedNutrients} amount = {100} amountUnit = {"grams"} grams = {100}/>}</Col>
                             <Col>
                                 {(selectedNutrients != null && selectedPortions != null) && <Attributes />}
                             </Col>

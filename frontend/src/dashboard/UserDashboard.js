@@ -49,7 +49,34 @@ const NutritionalText = ({goals}) => {
 
 }
 
-const Welcome = ({username, goals, change}) => {
+const Welcome = ({userKey, change}) => {
+    const [goals, setGoals] = useState(null);
+    const [username, setUsername] = useState('');
+
+    useEffect(() => {
+        //On load fetch goal
+        const getGoal = async () => {
+            console.log("Executing user/currentGoal API Call...");
+            const response = await fetch(process.env.REACT_APP_API_URL + "users/currentGoal", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({"userKey": userKey})
+              });
+      
+              const x = await response.json();
+              console.log(x);
+              if(x != null){
+                setUsername(x.user.username)
+                setGoals(x.goals[0]);
+              }
+          }
+      
+        getGoal();
+        
+    }, [userKey]);
+
     return (
         <>
             <h1 className="mb-5">Welcome, {username}</h1>
@@ -73,13 +100,13 @@ const Welcome = ({username, goals, change}) => {
     );
 }
 
-export default function UserDashboard({username, goals}){
+export default function UserDashboard({userKey}){
     const [mode, setMode] = useState("welcome");
     // Chart configuration
 
     return (
         <>
-            {mode === "welcome" && <Welcome username = {username} goals = {goals} change = {(e) => setMode(e)}/>}
+            {mode === "welcome" && <Welcome userKey = {userKey} change = {(e) => setMode(e)}/>}
             {mode === "schedule" && <AddSchedule back = {(e) => setMode(e)}/>}
             {mode === "goals" && <EditGoals back = {(e) => setMode(e)} currentInfo={{"weight": 150}}/>}
             {mode === "addMeal" && <AddMeal back = {(e => setMode(e))} />}
