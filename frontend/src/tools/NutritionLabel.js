@@ -25,7 +25,6 @@ export default function NutritionLabel({nutrients, amount, amountUnit, grams}) {
       
       if (nutrients && Array.isArray(nutrients)) {
         const nutrientNames = ["calories", "totalfats", "transfat", "saturatedfat", "cholesterol", "sodium", "carbohydrates", "dietaryfiber", "sugars", "protein"];
-      
         nutrientNames.forEach((nutrientName) => {
             let x = nutrients.find(element => element.name === nutrientName)?.amount ?? 0;
             if(x !== null && x !== undefined){
