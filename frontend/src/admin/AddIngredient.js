@@ -15,6 +15,7 @@ export default function AddIngredient({back}){
     const [dairy, setDairy] = useState(false);
     const [wholeIngredient, setWholeIngredient] = useState(false);
     const [message, setMessage] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(null);
     
     const search = async (event) => {
         event.preventDefault();
@@ -46,7 +47,16 @@ export default function AddIngredient({back}){
             console.log("Search by ID Failed!");
             return;
         }
-        const food = await response.json();
+
+        let food = null;
+        try{
+            food = await response.json();
+        } catch(error){
+            console.log(`Error - could not fetch ingredient ${name}`);
+            setErrorMessage(`Error - could not fetch ingredient ${name}`);
+            return;
+        }
+        setErrorMessage(null);
         setSelectedNutrients(food.nutrients);
         setSelectedPortions(food.portions);
         setSelectedIngredientID(FDCID);;
