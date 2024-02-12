@@ -13,7 +13,7 @@ export default class BrowseMeals extends React.Component{
         this.back = props.back;
         this.state = {
             displayedMeals: [],
-            selectedMealName: '',
+            selectedMealName: null,
             selectedIngredients: []
         }
     }
@@ -99,12 +99,16 @@ export default class BrowseMeals extends React.Component{
         }
     };
 
+    async AddMealToPlan(){
+        return;
+    }
+
     render(){
         return(
             <Container>
                 <Button onClick = {() => this.back("welcome")}>Back</Button>
                 <Row>
-                    <Col xs = "6">
+                    <Col xs = "4">
                         <h1>Meals</h1>
                         {this.state.displayedMeals != null && this.state.displayedMeals.map((meal) => (
                             <div style = {{height: "75px", border: "1px solid black"}} className = "align-items-center" onClick = {() => this.displayMeal(meal.mealKey)}>
@@ -113,19 +117,23 @@ export default class BrowseMeals extends React.Component{
                             </div>
                         ))}
                     </Col>
-                    <Col xs = "6">
+                    <Col xs = "4">
                         {this.state.selectedMealName != null && <h2>{this.state.selectedMealName}</h2>}
                         {this.state.selectedIngredients != null &&
                             this.state.selectedIngredients.map((ingredient) => (
                                 <div>{ingredient.amount} {ingredient.portion} {ingredient.name}</div>
                             ))}
-                            {this.state.selectedMealNutrients != null && 
-                                <NutritionLabel 
-                                    nutrients = {this.state.selectedMealNutrients}
-                                    amount = {1} 
-                                    amountUnit = "serving" 
-                                    grams = {100}/>}
+                        {this.state.selectedMealNutrients != null && 
+                            <NutritionLabel 
+                                nutrients = {this.state.selectedMealNutrients}
+                                amount = {1} 
+                                amountUnit = "serving" 
+                                grams = {100}/>}
+                        {this.state.selectedMealName != null && <Button>Add This Meal to My Plan</Button>}
 
+                    </Col>
+                    <Col xs = "4">
+                    
                     </Col>
                 </Row>
             </Container>

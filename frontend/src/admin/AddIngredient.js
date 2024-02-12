@@ -14,6 +14,7 @@ export default function AddIngredient({back}){
     const [meat, setMeat] = useState(false);
     const [dairy, setDairy] = useState(false);
     const [wholeIngredient, setWholeIngredient] = useState(false);
+    
     const [message, setMessage] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
     
@@ -64,6 +65,7 @@ export default function AddIngredient({back}){
         setMeat(false);
         setDairy(false);
         setWholeIngredient(false);
+        setMessage(null);
     }
 
     const addIDToDB = async(event) => {
@@ -154,6 +156,8 @@ export default function AddIngredient({back}){
 
                 </InputGroup>
                 <Button className="mt-5" type = "submit">Add to Database</Button>
+                <br></br>
+                {message != null && message}
             </Form>
         )
     }
@@ -184,12 +188,16 @@ export default function AddIngredient({back}){
                     </Col>
                     <Col className="justify-content-center">
                         <Row>
-                            <Col>{selectedNutrients != null && <NutritionLabel nutrients={selectedNutrients} amount = {100} amountUnit = {"grams"} grams = {100}/>}</Col>
+                           
+                            <Col>
+                                {selectedIngredientName != null && <h3>{selectedIngredientName}</h3>}
+                                {selectedNutrients != null && <NutritionLabel nutrients={selectedNutrients} amount = {100} amountUnit = {"grams"} grams = {100}/>}
+                            </Col>
                             <Col>
                                 {(selectedNutrients != null && selectedPortions != null) && <Attributes />}
                             </Col>
                         </Row>
-                        {message != null && message}
+                       
                     </Col>
                 </Row>
             </Container>

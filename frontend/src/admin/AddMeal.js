@@ -95,16 +95,17 @@ export default class MealLogger extends Component{
     submitMeal = async () => {
         let updatedIngredients = [...this.state.ingredients];
         for(let i = 0; i < updatedIngredients.length; i++){
-            updatedIngredients[i].portion = updatedIngredients[i].portion.storeAmountKey;
+            updatedIngredients[i].portion = updatedIngredients[i].portion.portionKey;
         }
 
+        console.log(updatedIngredients);
         const response = await fetch(process.env.REACT_APP_API_URL + "foods/addMeal", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                    "ingredients": this.state.ingredients,
+                    "ingredients": updatedIngredients,
                     "name": this.state.mealName, 
                     "type": ''
             })
@@ -124,15 +125,15 @@ export default class MealLogger extends Component{
                 <h4>Add A Meal</h4>
                 <Form>
                     <Form.Group>
-                                    <Form.Label>Meal name</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        value={this.state.mealName}
-                                        onChange = {this.changeName}
-                                        placeholder={"Name of the meal"}
-                                        autoComplete="off"
-                                    />
-                                </Form.Group>
+                        <Form.Label>Meal name</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={this.state.mealName}
+                            onChange = {this.changeName}
+                            placeholder={"Name of the meal"}
+                            autoComplete="off"
+                        />
+                    </Form.Group>
                     <Container className = "pt-5">
                         {this.state.ingredients !== null && this.state.ingredients.map((item) => 
                            this.mealIngredient(item)
