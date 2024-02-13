@@ -1,15 +1,27 @@
-import logo from './logo.svg';
 import './App.css';
 
 import React from 'react';
-import InitialForm from './initialForm/InitialForm';
+import {Button} from 'react-bootstrap';
+
+import UserDashboard      from './dashboard/UserDashboard.js'
+import Login from './dashboard/Login.js'
+
+import {useState} from 'react';
 
 
 function App() {
+  const [mode, setMode] = useState("user");
+  const [userKey, setUserKey] = useState("");
+
+  const login = async (newUserKey, mode) => {
+    setUserKey(newUserKey);
+    setMode(mode);
+  }
+
   return (
     <div className="App">
-      Full Circle Nutrition
-      <InitialForm />
+      {mode == "admin" && <UserDashboard userKey = {userKey} />}
+      {mode == "user" && <Login login = {(userKey) => login(userKey, "admin")}/>}
     </div>
 
     
