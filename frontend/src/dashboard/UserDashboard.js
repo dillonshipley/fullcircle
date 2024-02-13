@@ -4,6 +4,7 @@ import AddSchedule from '../tools/AddSchedule';
 import EditGoals from '../tools/EditGoals';
 import BrowseMeals from './BrowseMeals.js';
 import AddIngredient from '../admin/AddIngredient.js';
+import EditIngredients from '../admin/EditIngredient.js';
 import AddMeal from '../admin/AddMeal.js';
 
 import 'chart.js/auto';
@@ -88,8 +89,11 @@ const Welcome = ({userKey, change}) => {
                     <Button onClick = {() => change("goals")}>Edit Your Goals or Personal Information</Button>
                     <p></p>
                     <Button onClick = {() => change("schedule")}>Edit Your Schedule</Button>
+                    <p></p>
                     <Button onClick = {() => change("addMeal")}>(Admin) Add a Meal</Button>
+                    <p></p>
                     <Button onClick = {() => change("addIngredient")}>(Admin) Add Ingredient to Database</Button>
+                    <Button onClick = {() => change("editIngredient")}>(Admin) Edit Ingredient Database</Button>
                 </Col>
                 <Col xs = {6} style={{ textAlign: 'center' }}>
                     <h2>Meals</h2>
@@ -112,6 +116,7 @@ export default function UserDashboard({userKey}){
             {mode === "addMeal" && <AddMeal back = {(e => setMode(e))} />}
             {mode === "browseMeals" && <BrowseMeals back = {(e => setMode(e))} />}
             {mode === "addIngredient" && <AddIngredient back = {(e) => setMode(e)} />}
+            {mode === "editIngredient" && <EditIngredients back = {(e) => setMode(e)}/>}
         </>
     
     );

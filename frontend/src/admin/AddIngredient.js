@@ -29,10 +29,18 @@ export default function AddIngredient({back}){
             body: JSON.stringify({"searchTerm": term})
         });
 
-        const x = await response.json();
-        const array = x.map(x => [x.description, x.id]);
-        setIngredients(array);
-        setInsertedPortions([])
+        if(response.headers.get('content-type').includes('application/json')){
+            const x = await response.json();
+            const array = x.map(x => [x.description, x.id]);
+            setIngredients(array);
+            setInsertedPortions([])
+        } else {
+            const y = await response.text();
+            console.log(y)
+            setErrorMessage(y);
+        }
+
+        
     }
 
     const selectIngredient = async (name, FDCID) => {
@@ -184,6 +192,7 @@ export default function AddIngredient({back}){
                                         {x[0]}
                                 </div>
                             ))}
+                            {errorMessage != null && errorMessage}
                         </Form>
                     </Col>
                     <Col className="justify-content-center">

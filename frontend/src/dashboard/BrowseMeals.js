@@ -100,7 +100,29 @@ export default class BrowseMeals extends React.Component{
     };
 
     async AddMealToPlan(){
+        
         return;
+    }
+
+    editableIngredient(ingredient){
+
+        const removeIngredient = (ingredientKey) => {
+            let updatedIngredients = [...this.state.selectedIngredients];
+            updatedIngredients = updatedIngredients.filter(item => item.ingredientKey !== ingredientKey)
+            this.setState({selectedIngredients: updatedIngredients});
+        }
+
+        return (
+            <>  
+                <Container style ={{border: "1px solid black", borderRadius: "5px", width: "100%", height: "50px", padding: 0, justifyContent: "space-between"}} className="pb-5 d-flex flex-direction-row">
+                    <p style={{fontSize: "20px", marginLeft: 0}}>{ingredient.amount + " " + ingredient.portion + "\t " + ingredient.name}</p>
+                    <Button style={{ height: "50px", width: "100px", marginRight: 0}} onClick={() => removeIngredient(ingredient.ingredientKey)}>Remove</Button>
+                {/*!this.state.openIngredient && <Button style ={{height: "50px", width: "100px"}} onClick={() => this.setOpenIngredient(ingredient.ingredientKey)}>Edit</Button>
+                <Button style={{ height: "50px", width: "100px" }} onClick={() => this.removeIngredient(ingredient.ingredientKey)}>Remove</Button>         */}   
+                </Container>
+            </>
+            
+        );
     }
 
     render(){
@@ -121,7 +143,7 @@ export default class BrowseMeals extends React.Component{
                         {this.state.selectedMealName != null && <h2>{this.state.selectedMealName}</h2>}
                         {this.state.selectedIngredients != null &&
                             this.state.selectedIngredients.map((ingredient) => (
-                                <div>{ingredient.amount} {ingredient.portion} {ingredient.name}</div>
+                                this.editableIngredient(ingredient)
                             ))}
                         {this.state.selectedMealNutrients != null && 
                             <NutritionLabel 
