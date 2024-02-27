@@ -127,7 +127,7 @@ export default class BrowseMeals extends React.Component{
 
     render(){
         return(
-            <Container>
+            <Container fluid>
                 <Button onClick = {() => this.back("welcome")}>Back</Button>
                 <Row>
                     <Col xs = "4">

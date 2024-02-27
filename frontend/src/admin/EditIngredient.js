@@ -43,6 +43,7 @@ export default function EditIngredients({back}){
                 .map(([name, amount]) => ({ name, amount }));
         x.nutrients = nutrients;
         setSelectedIngredient(x);
+        setSelectedIngredientName(x.ingredient.ingredientName);
         setPortionsData(x.portions);
     }
 
@@ -87,6 +88,7 @@ export default function EditIngredients({back}){
         } else {
             console.log("Request successful");
         }
+        loadIngredients();
         
     }
 
@@ -95,12 +97,18 @@ export default function EditIngredients({back}){
         setSelectedIngredientName(newValue);
     }
 
+    const removePortion = (portionKey) => {
+        console.log(portionsData);
+        let updatedPortions = portionsData.filter(item => item.portionKey !== portionKey)
+        setPortionsData(updatedPortions);
+    }
+
     const singleIngredient = () => {
         return (
             <Container fluid>
                 <Form onSubmit = {updateIngredient}>
                     <Row className = "mt-5">
-                        {selectedIngredient != null && <Form.Control onChange = {changeIngredientName} placeholder = {selectedIngredient.ingredient.ingredientName} />}
+                        {selectedIngredient != null && <Form.Control onChange = {changeIngredientName} value = {selectedIngredientName} placeholder = {selectedIngredient.ingredient.ingredientName} />}
                     </Row>
                     <Row>
                         <Col xs = {6}>
@@ -113,9 +121,15 @@ export default function EditIngredients({back}){
                         </Col>
                         <Col xs = {6}>
                             <h2 className ="mb5">Portions</h2>
-                            {selectedIngredient.portions.map((portion, index) => (
-                                <Form.Control name = {portion.portionKey} value = {portionsData[index].name}placeholder={portion.name} onChange={portionChange}/>
+                            {portionsData.map((portion, index) => (
+
+                                <div className={"d-flex align-items-center flex-direction-row"}>
+                                    <Form.Control name = {portion.portionKey} value = {portionsData[index].name}placeholder={portion.name} onChange={portionChange} style = {{width: "80%"}}/>
+                                    <img style = {{width: "5%"}} className = "ml-5" src={process.env.PUBLIC_URL + "/images/remove.png"} onClick = {(e) => removePortion(portion.portionKey)}/>
+                                </div>
+                                
                             ))}
+                            
                         </Col>
 
                     </Row>

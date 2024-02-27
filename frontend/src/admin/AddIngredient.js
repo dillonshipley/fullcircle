@@ -1,5 +1,5 @@
-import React, {useState, useCallback} from 'react';
-import {Container, Row, Form, FormControl, Col, Button, InputGroup} from 'react-bootstrap';
+import React, {useState} from 'react';
+import {Container, Row, Form, Pagination, Col, Button, InputGroup, ListGroup} from 'react-bootstrap';
 import NutritionLabel from '../tools/NutritionLabel';
 
 export default function AddIngredient({back}){
@@ -32,8 +32,12 @@ export default function AddIngredient({back}){
         if(response.headers.get('content-type').includes('application/json')){
             const x = await response.json();
             const array = x.map(x => [x.description, x.id]);
+            console.log(array);
             setIngredients(array);
-            setInsertedPortions([])
+            setInsertedPortions([]);
+
+            setTotalPages(Math.ceil(array.length / itemsPerPage));
+            setEndIndex(Math.min(startIndex + itemsPerPage, array.length));
         } else {
             const y = await response.text();
             console.log(y)
@@ -81,7 +85,7 @@ export default function AddIngredient({back}){
         var inputElement = document.getElementById("ingredientName");
         var inputValue = inputElement.value;
         console.log(inputValue);
-        if(inputValue != "")
+        if(inputValue !== "")
             setSelectedIngredientName(inputValue);
         
         const response = await fetch(process.env.REACT_APP_API_URL + "adminRoutes/addIDToDB", {
@@ -102,7 +106,15 @@ export default function AddIngredient({back}){
         if(!response.ok)
             setMessage(selectedIngredientName + " could not be added to the database.");
 
-        const data = await response.text();
+        let data = await response.text();
+        if (data.startsWith("Error")){
+            const index = data.indexOf('[');
+            if (index !== -1) {
+                data = data.slice(index, data.length);
+            console.log(data);
+
+    }
+        }
         if(data === "Ingredient Successfully Added!")
             setMessage(selectedIngredientName + " was successfully added to the database!");
 
@@ -170,28 +182,71 @@ export default function AddIngredient({back}){
         )
     }
 
+    const itemsPerPage = 10; // Number of items per page
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [endIndex, setEndIndex] = useState(0);
+
+    // Calculate index range for current page
+    const startIndex = (currentPage - 1) * itemsPerPage;
+
+    // Function to handle page change
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
     return (
         <>
             <Container fluid>
                 <Button onClick = {() => back("welcome")}>Back</Button>
-                <Row className = "ml-5 mr-5 mt-5">
+                <Row className = "ml-5 mr-5">
                     <Col>
                         <Form onSubmit ={(e) => search(e)}>
                             <Form.Group>
+                                <h2>Ingredient Search</h2>
+                                <h5>All nutritional labels are displayed for 100g of the given ingredient</h5>
                                 <Form.Control 
                                         type = "text"
                                         placeholder = "Find an ingredient"
                                         onChange = {(e) => setSearchTerm(e.target.value)}
                                         autoComplete = "off" 
+                                        className = "mt-5"
                                 />
                             </Form.Group>
-                            {ingredients != null && ingredients.slice(0, 10).map((x, index) => (
-                                <div key = {index} 
-                                    style = {{height: "50px", border: "1px solid black"}}
-                                    onClick = {() => selectIngredient(x[0], x[1])}>
-                                        {x[0]}
-                                </div>
-                            ))}
+                            {ingredients !== null && ingredients.length > 0 && (
+                                <ListGroup>
+                                    {ingredients.slice(((currentPage - 1) * itemsPerPage), (currentPage * itemsPerPage) + itemsPerPage).map((x, index) => (
+                                        <ListGroup.Item key={startIndex + index} onClick={() => selectIngredient(x[0], x[1])}>
+                                            {x[0]}
+                                        </ListGroup.Item>
+                                    ))}
+                                </ListGroup>
+                            )}
+
+                            {/* Pagination controls */}
+                            {ingredients !== null && (
+                                <Pagination>
+                                    <Pagination.Prev
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        disabled={currentPage === 1}
+                                    />
+                                    {Array.from({ length: totalPages }, (_, i) => (
+                                        <Pagination.Item
+                                            key={i + 1}
+                                            active={i + 1 === currentPage}
+                                            onClick={() => handlePageChange(i + 1)}
+                                        >
+                                            {i + 1}
+                                        </Pagination.Item>
+                                    ))}
+                                    <Pagination.Next
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        disabled={currentPage === totalPages}
+                                    />
+                                </Pagination>
+                            )}
+
+
                             {errorMessage != null && errorMessage}
                         </Form>
                     </Col>
