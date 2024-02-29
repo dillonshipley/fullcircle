@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Container, Row, Form, Pagination, Col, Button, InputGroup, ListGroup} from 'react-bootstrap';
 import NutritionLabel from '../tools/NutritionLabel';
 
-export default function AddIngredient({back}){
+export default function AddIngredient({token, back}){
     const [term, setSearchTerm] = useState(null);
     const [ingredients, setIngredients] = useState(null);
     const [selectedIngredientID, setSelectedIngredientID] = useState(null);
@@ -92,6 +92,7 @@ export default function AddIngredient({back}){
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(
                 {"id": selectedIngredientID,

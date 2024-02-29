@@ -50,20 +50,27 @@ const NutritionalText = ({goals}) => {
 
 }
 
-const Welcome = ({userKey, change}) => {
+const Welcome = ({token, userKey, change}) => {
     const [goals, setGoals] = useState(null);
     const [username, setUsername] = useState('');
+
+
+    useEffect(() => {
+        //On load fetch goal
+        console.log(token);
+        
+    }, [token]);
 
     useEffect(() => {
         //On load fetch goal
         const getGoal = async () => {
             console.log("Executing user/currentGoal API Call...");
-            const response = await fetch(process.env.REACT_APP_API_URL + "users/currentGoal", {
-                method: 'POST',
+            const response = await fetch(process.env.REACT_APP_API_URL + `users/currentGoal/${userKey}`, {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({"userKey": userKey})
               });
       
               const x = await response.json();
@@ -73,7 +80,8 @@ const Welcome = ({userKey, change}) => {
                 setGoals(x.goals[0]);
               }
           }
-      
+          
+        console.log("token is" + token);
         getGoal();
         
     }, [userKey]);
@@ -104,19 +112,19 @@ const Welcome = ({userKey, change}) => {
     );
 }
 
-export default function UserDashboard({userKey}){
+export default function UserDashboard({userKey, token}){
     const [mode, setMode] = useState("welcome");
     // Chart configuration
 
     return (
         <>
-            {mode === "welcome" && <Welcome userKey = {userKey} change = {(e) => setMode(e)}/>}
-            {mode === "schedule" && <AddSchedule back = {(e) => setMode(e)} userKey = {userKey}/>}
-            {mode === "goals" && <EditGoals back = {(e) => setMode(e)} currentInfo={{"weight": 150}}/>}
-            {mode === "addMeal" && <AddMeal back = {(e => setMode(e))} />}
-            {mode === "browseMeals" && <BrowseMeals back = {(e => setMode(e))} />}
-            {mode === "addIngredient" && <AddIngredient back = {(e) => setMode(e)} />}
-            {mode === "editIngredient" && <EditIngredients back = {(e) => setMode(e)}/>}
+            {mode === "welcome" &&          <Welcome token = {token} userKey = {userKey} change = {(e) => setMode(e)}/>}
+            {mode === "schedule" &&         <AddSchedule token = {token} back = {(e) => setMode(e)} userKey = {userKey}/>}
+            {mode === "goals" &&            <EditGoals token = {token} back = {(e) => setMode(e)} currentInfo={{"weight": 150}}/>}
+            {mode === "addMeal" &&          <AddMeal token = {token} back = {(e => setMode(e))} />}
+            {mode === "browseMeals" &&      <BrowseMeals token = {token} back = {(e => setMode(e))} />}
+            {mode === "addIngredient" &&    <AddIngredient token = {token} back = {(e) => setMode(e)} />}
+            {mode === "editIngredient" &&   <EditIngredients token = {token} back = {(e) => setMode(e)}/>}
         </>
     
     );
