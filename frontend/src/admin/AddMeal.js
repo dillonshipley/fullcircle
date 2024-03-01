@@ -15,7 +15,8 @@ export default class MealLogger extends Component{
             ingredients: [],
             openIngredient: true,
             openIngredient: "null",
-            allIngredients: null
+            allIngredients: null,
+            token: props.token,
         }
         this.back = props.back;
         
@@ -103,6 +104,7 @@ export default class MealLogger extends Component{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.token}`
             },
             body: JSON.stringify({
                     "ingredients": updatedIngredients,
@@ -140,7 +142,8 @@ export default class MealLogger extends Component{
                         )}
                         {/*loop - for x in ingredientCount, display an ingredient*/}
                         {this.state.openIngredient &&
-                            <MealToIngredient  
+                            <MealToIngredient
+                                token = {this.state.token}  
                                 allIngredients={this.state.allIngredients}
                                 finalize = {(data) => this.addIngredient(data)}
                                 editIngredient={this.state.openIngredient}

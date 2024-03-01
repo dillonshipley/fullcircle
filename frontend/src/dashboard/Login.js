@@ -22,7 +22,7 @@ export default function Login({login}){
 
         const x = await response.json();
         if(x.message === "Success")
-            login(x.userKey);
+            login(x.userKey, x.token);
     }
 
     const handleSignUp = async (event) => {

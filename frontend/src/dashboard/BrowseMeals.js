@@ -14,7 +14,8 @@ export default class BrowseMeals extends React.Component{
         this.state = {
             displayedMeals: [],
             selectedMealName: null,
-            selectedIngredients: []
+            selectedIngredients: [],
+            token: props.token
         }
     }
     
@@ -58,15 +59,13 @@ export default class BrowseMeals extends React.Component{
 
     async displayMeal(mealKey){
         console.log("meal name" + mealKey);
-        const response = await fetch(process.env.REACT_APP_API_URL + "foods/mealByKey", {
-            method: 'POST',
+        const response = await fetch(process.env.REACT_APP_API_URL + `foods/mealByKey/${mealKey}`, {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.token}`
             },
-            body: JSON.stringify(
-                    {"mealKey": mealKey}
-                )
-            });
+        });
         if(!response.ok){
             console.log("foods/mealByKey call unsuccessful");
         } else{
@@ -127,7 +126,7 @@ export default class BrowseMeals extends React.Component{
 
     render(){
         return(
-            <Container>
+            <Container fluid>
                 <Button onClick = {() => this.back("welcome")}>Back</Button>
                 <Row>
                     <Col xs = "4">
