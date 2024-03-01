@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Container, Row, Form, FormControl, Col, Button, InputGroup} from 'react-bootstrap';
 import NutritionLabel from '../tools/NutritionLabel';
 
-export default function MealToIngredient({allIngredients, finalize, editIngredient = "null"}){
+export default function MealToIngredient({token, allIngredients, finalize, editIngredient = "null"}){
     const [selectedIngredientKey, setSelectedIngredientKey] = useState(0);
     const [selectedIngredientName, setSelectedIngredientName] = useState("");
     const [loaded, setLoaded] = useState(false);
@@ -61,6 +61,7 @@ export default function MealToIngredient({allIngredients, finalize, editIngredie
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
         });
         if(!response.ok)

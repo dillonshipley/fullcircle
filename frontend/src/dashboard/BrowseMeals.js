@@ -14,7 +14,8 @@ export default class BrowseMeals extends React.Component{
         this.state = {
             displayedMeals: [],
             selectedMealName: null,
-            selectedIngredients: []
+            selectedIngredients: [],
+            token: props.token
         }
     }
     
@@ -62,6 +63,7 @@ export default class BrowseMeals extends React.Component{
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.token}`
             },
         });
         if(!response.ok){

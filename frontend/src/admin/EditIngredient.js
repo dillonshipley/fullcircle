@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Container, Row, Form, FormControl, Col, Button, InputGroup, ListGroup} from 'react-bootstrap';
 import NutritionLabel from '../tools/NutritionLabel';
 
-function SingleIngredient({ingredientKey, loadIngredients}){
+function SingleIngredient({token, ingredientKey, loadIngredients}){
     let [portionsData, setPortionsData] = useState(null);
     let [selectedIngredientName, setSelectedIngredientName] = useState(null);
     let [selectedIngredient, setSelectedIngredient] = useState(null);
@@ -38,6 +38,7 @@ function SingleIngredient({ingredientKey, loadIngredients}){
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
         });
         if(!response.ok)
@@ -78,6 +79,7 @@ function SingleIngredient({ingredientKey, loadIngredients}){
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({"portions": portionsData, "updatedName": selectedIngredientName, "ingredientKey": ingredientKey})
 
@@ -226,7 +228,7 @@ export default function EditIngredients({token, back}){
                     </ListGroup>
                 </Col>
                 <Col xs = {6}>
-                    {selectedIngredientKey != null && <SingleIngredient ingredientKey = {selectedIngredientKey} loadIngredients={loadIngredients}/>}
+                    {selectedIngredientKey != null && <SingleIngredient token = {token} ingredientKey = {selectedIngredientKey} loadIngredients={loadIngredients}/>}
                 </Col>
             </Row>
         </Container>
