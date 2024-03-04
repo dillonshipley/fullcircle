@@ -97,36 +97,33 @@ export default function AddIngredient({token, back}){
             body: JSON.stringify(
                 {"id": selectedIngredientID,
                 "name": selectedIngredientName, 
-                "attributes": [
-                    {"name": "Meat", "value": meat},
-                    {"name": "Dairy", "value": dairy},
-                ],
                 "portions": insertedPortions
             })
         });
         if(!response.ok)
             setMessage(selectedIngredientName + " could not be added to the database.");
 
-        let data = await response.text();
-        if (data.startsWith("Error")){
+        let data = await response.json();
+        if (data.message == ("Error")){
             const index = data.indexOf('[');
             if (index !== -1) {
                 data = data.slice(index, data.length);
-            console.log(data);
-
-    }
+                console.log(data);
+            }
         }
-        if(data === "Ingredient Successfully Added!")
+        if(data.message === "SUCCESS")
             setMessage(selectedIngredientName + " was successfully added to the database!");
 
     }
 
     const handlePortionChange = (portionDescription) => {
-        const isSelected = insertedPortions.includes(portionDescription);
+        const isSelected = insertedPortions.some(insertedPortion => {
+            return insertedPortion.portion === portionDescription;
+        });
         if (isSelected) {
-            setInsertedPortions(insertedPortions.filter(item => item !== portionDescription));
+            setInsertedPortions(insertedPortions.filter(item => item.portion !== portionDescription));
         } else {
-            setInsertedPortions([...insertedPortions, portionDescription]);
+            setInsertedPortions([...insertedPortions, {portion: portionDescription}]);
         }
     };
 
@@ -159,7 +156,7 @@ export default function AddIngredient({token, back}){
                         <p></p>
                         <Form.Check
                             name = "selectedPortion"
-                            checked = {insertedPortions.includes(portion.description)}
+                            checked = {insertedPortions.some(insertedPortion => {return insertedPortion.portion === portion.description;})}
                             label = {`${portion.description} (${portion.grams}g)`}
                             onChange = {() => handlePortionChange(portion.description)}             
                         />

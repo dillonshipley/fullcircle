@@ -98,7 +98,12 @@ export default class MealLogger extends Component{
         for(let i = 0; i < updatedIngredients.length; i++){
             updatedIngredients[i].portion = updatedIngredients[i].portion.portionKey;
         }
-
+        const meal = JSON.stringify({
+            "ingredients": updatedIngredients,
+            "name": this.state.mealName, 
+            "type": ''
+        })
+        console.log(meal);
         console.log(updatedIngredients);
         const response = await fetch(process.env.REACT_APP_API_URL + "foods/addMeal", {
             method: 'POST',
@@ -106,11 +111,7 @@ export default class MealLogger extends Component{
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.state.token}`
             },
-            body: JSON.stringify({
-                    "ingredients": updatedIngredients,
-                    "name": this.state.mealName, 
-                    "type": ''
-            })
+            body: meal
         });
         this.setState({
             mealName: '',
