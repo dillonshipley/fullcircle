@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
 import {Container, Row, Form, FormControl, Col, Button, InputGroup, ListGroup, Tabs, Tab} from 'react-bootstrap';
 import NutritionLabel from '../tools/NutritionLabel';
+import {useState, useEffect} from 'react';
 
-function SingleIngredient({token, ingredientKey, loadIngredients, attributes}){
+export default function SingleIngredient({token, ingredientKey, loadIngredients, attributes}){
     let [portionsData, setPortionsData] = useState(null);
     let [selectedIngredientName, setSelectedIngredientName] = useState(null);
     let [selectedIngredient, setSelectedIngredient] = useState(null);
@@ -27,7 +27,6 @@ function SingleIngredient({token, ingredientKey, loadIngredients, attributes}){
     }
 
     const removeAttribute = (attributeKey) => {
-        console.log(attributeKey);
         let updatedAttributes = attributeData.filter(item => item.attributeKey !== attributeKey)
         setAttributeData(updatedAttributes);
     }
@@ -74,7 +73,6 @@ function SingleIngredient({token, ingredientKey, loadIngredients, attributes}){
 
     }
 
-    //Execute the foods/IngredientByKey call
     const portionChange = (e) => {
         const { name, value } = e.target;
         const updatedPortionsData = portionsData.map(item => {
@@ -97,7 +95,7 @@ function SingleIngredient({token, ingredientKey, loadIngredients, attributes}){
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({"portions": portionsData, "updatedName": selectedIngredientName, "ingredientKey": ingredientKey})
+            body: JSON.stringify({"portions": portionsData, "updatedName": selectedIngredientName, "ingredientKey": ingredientKey, "attributes": attributeData})
 
         });
         if (!response.ok) {
@@ -108,17 +106,8 @@ function SingleIngredient({token, ingredientKey, loadIngredients, attributes}){
         loadIngredients();
     }
 
-    const changePortionName = (event) =>{
-        setOpenPortionName(event.target.value);
-    }
-
-    const changePortionGrams = (event) =>{
-        setOpenPortionGrams(event.target.value);
-    }
-
-    const changeAttribute = (event) => {
-        const newValue = event.target.value;
-        setSelectedAttribute(newValue);
+    const handleChange = (event, setStateFunction) => {
+        setStateFunction(event.target.value);
     }
 
     const addPortionData = () => {
@@ -131,16 +120,29 @@ function SingleIngredient({token, ingredientKey, loadIngredients, attributes}){
         setOpenPortion(false);
     }
 
+    const addAttribute = () => {
+        if(selectedAttribute === "")
+            return;
+
+        let attribute = attributes.find(item => item.attributeName === selectedAttribute);
+
+        const updatedAttributes = attributeData ?? [];
+        updatedAttributes.push(attribute);
+        setAttributeData(updatedAttributes);
+        setOpenAttribute(false);
+        setSelectedAttribute("");
+    }
+
     if(selectedIngredient != null){
         return (
             <Container fluid>
                 <Form onSubmit = {updateIngredient}>
-                    <Row className = "mt-5">
+                    <Row>
                         {selectedIngredient != null && <Form.Control onChange = {changeIngredientName} value = {selectedIngredientName} placeholder = {selectedIngredient.ingredient.ingredientName} />}
                     </Row>
                     <Row>
                         <Col xs = {6}>
-                            <h2>Nutrition</h2>
+                            <h2 style = {{marginTop: "10px"}}>Nutrition</h2>
                             <NutritionLabel 
                             nutrients = {selectedIngredient.nutrients}
                             amount = {1} 
@@ -161,14 +163,16 @@ function SingleIngredient({token, ingredientKey, loadIngredients, attributes}){
                                 {!openPortion && <Button onClick = {() => setOpenPortion(true)}>Add New Portion</Button>}
                                 {openPortion && (
                                     <div className={"d-flex align-items-center flex-direction-row"}>
-                                        <Form.Control placeholder={"Add new portion..."} onChange={(e) => changePortionName(e)} style = {{width: "50%"}}/>
-                                        <Form.Control placeholder = {"g"} onChange={(e) => changePortionGrams(e)} style = {{width: "10%"}} />
+                                        <Form.Control placeholder={"Add new portion..."} onChange={(e) => handleChange(e, setOpenPortionName)} style = {{width: "50%"}}/>
+                                        <Form.Control placeholder = {"g"} onChange={(e) => handleChange(e, setOpenPortionGrams)} style = {{width: "10%"}} />
                                         <img style = {{width: "5%", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/remove.png"} onClick = {(e) => setOpenPortion(false)}/>
                                         <img style = {{width: "5%", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/plus.png"} onClick = {() => addPortionData()}/>
                                     </div>
                                 )}
                             </Row>
-                            <Row>
+                            <Row className = "mt-5">
+                                <Col style = {{paddingLeft: 0}}>
+
                                 <h2 className ="mb5">Attributes</h2>
                                 {attributeData != null && attributeData.map((attribute, index) => (
 
@@ -177,12 +181,17 @@ function SingleIngredient({token, ingredientKey, loadIngredients, attributes}){
                                         <img style = {{width: "5%", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/remove.png"} onClick = {(e) => removeAttribute(attribute.attributeKey)}/>
                                     </div>
                                 ))}
-                                {(!openAttribute) && <Button onClick = {() => setOpenAttribute(true)}>Add New Attribute</Button>}
+                                {(!openAttribute) && (
+                                    <div>
+                                        <Button onClick = {() => setOpenAttribute(true)}>Add New Attribute</Button>
+                                    </div>
+                                    
+                                )}
                                 {openAttribute && (
                                     <div className={"d-flex align-items-center flex-direction-row"}>
                                        <Form.Control
                                             as="select"
-                                            onChange= {(e) => changeAttribute(e)}
+                                            onChange= {(e) => handleChange(e, setSelectedAttribute)}
                                             value = {selectedAttribute}
                                             style={{ width: '50%' }}
                                             >
@@ -193,16 +202,18 @@ function SingleIngredient({token, ingredientKey, loadIngredients, attributes}){
                                                 ))}
                                             </Form.Control>
                                         <img style = {{width: "5%", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/remove.png"} onClick = {(e) => setOpenAttribute(false)}/>
-                                        <img style = {{width: "5%", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/plus.png"} onClick = {() => addPortionData()}/>
+                                        <img style = {{width: "5%", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/plus.png"} onClick = {() => addAttribute()}/>
                                     </div>
                                 )}
-
+                                </Col>  
                             </Row>
-
+                            <Row className = "mt-5">
+                                <Button style = {{marginLeft: 0}} type = "submit">Submit</Button>
+                            </Row>
                         </Col>
 
                     </Row>
-                    <Button type = "submit">Submit</Button>
+
                 </Form>
             </Container>
         )   
@@ -211,122 +222,4 @@ function SingleIngredient({token, ingredientKey, loadIngredients, attributes}){
     }
 
 
-}
-
-export default function EditIngredients({token, back}){
-    let [ingredients, setIngredients] = useState(null);
-    let [ingredientFilter, setIngredientFilter] = useState("");
-    let [selectedIngredientKey, setSelectedIngredientKey] = useState(null);
-
-    let [allAttributes, setAllAttributes] = useState(null);
-    let [newAttributeName, setNewAttributeName] = useState(null);
-   
-    const loadIngredients = async () => {
-        const response = await fetch(process.env.REACT_APP_API_URL + "foods/ingredientList", {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        });
-        if(!response.ok){
-            console.log("error - response could not be found");
-        }
-
-        const x = await response.json();
-        let allIngredients = x.ingredients;
-        allIngredients.sort((a, b) => {
-            // Convert both names to lowercase for case-insensitive comparison
-            const nameA = a.ingredientName.toLowerCase();
-            const nameB = b.ingredientName.toLowerCase();
-        
-            if (nameA < nameB) {
-                return -1; // Name A comes before Name B
-            } else if (nameA > nameB) {
-                return 1; // Name B comes before Name A
-            } else {
-                return 0; // Names are equal
-            }
-        });
-        setIngredients(allIngredients);
-
-        setAllAttributes(x.attributes);
-    }
-
-    useEffect(() => {
-        loadIngredients();
-        console.log(token);
-    }, [back]);    
-
-    const handleFilterChange = (e) => {
-        setIngredientFilter(e.target.value.toLowerCase());
-      };
-
-    const addAttribute = async() => {
-        const response = await fetch(process.env.REACT_APP_API_URL + "foods/addAttribute", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                "attributeName": newAttributeName
-            })
-        });
-        if(!response.ok){
-            console.log("error - response could not be found");
-        }
-    }
-
-    return (
-        <Container fluid>
-           <Row>
-                <Col xs = {6}>
-                    <Button onClick = {() => back("welcome")}>Back</Button>
-                    <h2>Find an Ingredient</h2>
-                    
-                    {/*Filter*/}
-                    <Tabs defaultActiveKey="profile"
-                        id="uncontrolled-tab-example"
-                        className="mb-3">
-                            <Tab eventKey="Search By Name" title="Search By Name">
-                                <Form.Group controlId="filterInput">
-                                    <Form.Control
-                                    type="text"
-                                    placeholder="Search for items..."
-                                    value={ingredientFilter}
-                                    onChange={handleFilterChange}
-                                    />
-                                </Form.Group>
-
-                                {/*List of ingredients*/}
-                                <ListGroup>
-                                    {ingredients != null && ingredients
-                                        .filter(ingredient => ingredient.ingredientName.toLowerCase().includes(ingredientFilter))
-                                        .map((ingredient) => (
-                                        <ListGroup.Item style = {{height: "50px"}} onClick = {() => setSelectedIngredientKey(ingredient.ingredientKey)}>{ingredient.ingredientName}</ListGroup.Item>
-                                    ))}
-                                </ListGroup>
-                            </Tab>
-                            <Tab eventKey="Search By Attribute" title="Search By Attribute">
-                                <ListGroup>
-                                    {allAttributes != null && allAttributes.map((attribute) => 
-                                        <ListGroup.Item style = {{height: "50px"}}>{attribute.attributeName}</ListGroup.Item>
-                                    )}
-                                </ListGroup>
-                                <Form>
-
-                                    <Form.Control>
-                                        
-                                    </Form.Control>
-                                </Form>
-                            </Tab>
-                    
-                    </Tabs>
-
-                </Col>
-                <Col xs = {6}>
-                    {selectedIngredientKey != null && <SingleIngredient token = {token} ingredientKey = {selectedIngredientKey} loadIngredients={loadIngredients} attributes = {allAttributes}/>}
-                </Col>
-            </Row>
-        </Container>
-    )
 }

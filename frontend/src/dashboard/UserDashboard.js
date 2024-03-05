@@ -3,8 +3,8 @@ import React, {useEffect, useState} from 'react';
 import AddSchedule from './AddSchedule';
 import EditGoals from '../tools/EditGoals';
 import BrowseMeals from './BrowseMeals.js';
-import AddIngredient from '../admin/AddIngredient.js';
-import EditIngredients from '../admin/EditIngredient.js';
+import AddIngredient from '../Ingredient/AddIngredient.js';
+import EditIngredients from '../Ingredient/EditIngredient.js';
 import AddMeal from '../admin/AddMeal.js';
 
 import 'chart.js/auto';
@@ -100,8 +100,7 @@ const Welcome = ({token, userKey, change}) => {
                     <p></p>
                     <Button onClick = {() => change("addMeal")}>(Admin) Add a Meal</Button>
                     <p></p>
-                    <Button onClick = {() => change("addIngredient")}>(Admin) Add Ingredient to Database</Button>
-                    <Button onClick = {() => change("editIngredient")}>(Admin) Edit Ingredient Database</Button>
+                    <Button onClick = {() => change("editIngredient")}>Ingredients</Button>
                 </Col>
                 <Col xs = {6} style={{ textAlign: 'center' }}>
                     <h2>Meals</h2>
@@ -123,7 +122,6 @@ export default function UserDashboard({userKey, token}){
             {mode === "goals" &&            <EditGoals token = {token} back = {(e) => setMode(e)} currentInfo={{"weight": 150}}/>}
             {mode === "addMeal" &&          <AddMeal token = {token} back = {(e => setMode(e))} />}
             {mode === "browseMeals" &&      <BrowseMeals token = {token} back = {(e => setMode(e))} />}
-            {mode === "addIngredient" &&    <AddIngredient token = {token} back = {(e) => setMode(e)} />}
             {mode === "editIngredient" &&   <EditIngredients token = {token} back = {(e) => setMode(e)}/>}
         </>
     
