@@ -65,6 +65,7 @@ export default function SingleIngredient({token, ingredientKey, loadIngredients,
             setSelectedIngredient(x);
             setSelectedIngredientName(x.ingredient.ingredientName);
             setPortionsData(x.portions);
+            setAttributeData(x.attributes);
 
             setOpenPortionGrams("");
             setOpenPortionName("");
@@ -85,9 +86,13 @@ export default function SingleIngredient({token, ingredientKey, loadIngredients,
     };
 
     const updateIngredient = async (event) => {
+
         event.preventDefault();
         //let newPortions = portionsData.filter(item => item.name != oldPortions.find(x => x.portionKey === item.portionKey)?.name); such a pretty line but I couldn't make it work
-        
+
+        console.log("attributes");
+        console.log(attributeData);
+
         console.log("Executing foods/updateIngredient API Call with key " + ingredientKey + "...");
         const response = await fetch(process.env.REACT_APP_API_URL + "foods/updateIngredient", {
             method: 'POST',
