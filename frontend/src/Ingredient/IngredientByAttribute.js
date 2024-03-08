@@ -118,7 +118,7 @@ export default function IngredientByAttributes({token, all, reload}){
                     </Form>
                 </Col>
                 <Col xs = {6}>
-                    {ingredientKey != null && <SingleIngredient token = {token} ingredientKey = {ingredientKey} loadIngredients={loadAttributes} attributes = {all}/>}
+                    {ingredientKey != null && <SingleIngredient token = {token} ingredientKey = {ingredientKey} loadIngredients={loadAttributes} attributes = {allAttributes}/>}
                 </Col>
             </Row>
 

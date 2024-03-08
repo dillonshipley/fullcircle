@@ -182,7 +182,7 @@ export default function SingleIngredient({token, ingredientKey, loadIngredients,
                                 {attributeData != null && attributeData.map((attribute, index) => (
 
                                     <div className={"d-flex align-items-center flex-direction-row"}>
-                                        <Form.Control name = {attribute.attributeKey} value = {attributeData[index].name}placeholder={attribute.attributeName} onChange={portionChange} style = {{width: "50%"}}/>
+                                        <Form.Control name = {attribute.attributeKey} value = {attributeData[index].attributeName}placeholder={attribute.attributeName} onChange={portionChange} style = {{width: "50%"}}/>
                                         <img style = {{width: "5%", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/remove.png"} onClick = {(e) => removeAttribute(attribute.attributeKey)}/>
                                     </div>
                                 ))}
