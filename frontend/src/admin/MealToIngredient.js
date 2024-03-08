@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Container, Row, Form, FormControl, Col, Button, InputGroup} from 'react-bootstrap';
 import NutritionLabel from '../tools/NutritionLabel';
 
-export default function MealToIngredient({allIngredients, finalize, editIngredient = "null"}){
+export default function MealToIngredient({token, allIngredients, finalize, editIngredient = "null"}){
     const [selectedIngredientKey, setSelectedIngredientKey] = useState(0);
     const [selectedIngredientName, setSelectedIngredientName] = useState("");
     const [loaded, setLoaded] = useState(false);
@@ -57,13 +57,12 @@ export default function MealToIngredient({allIngredients, finalize, editIngredie
         setSelectedIngredientKey(ingredientKey);
         setSelectedIngredientName(name);
         console.log("Executing get/IngredientByKey API Call with key " + ingredientKey + "...");
-        const response = await fetch(process.env.REACT_APP_API_URL + "foods/ingredientByKey", {
-            method: 'POST',
+        const response = await fetch(process.env.REACT_APP_API_URL + `foods/ingredientByKey/${ingredientKey}`, {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({"ingredientKey": ingredientKey})
-
         });
         if(!response.ok)
             console.log(`Getting ingredient key ${ingredientKey} failed!`)

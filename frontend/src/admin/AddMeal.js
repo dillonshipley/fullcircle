@@ -15,7 +15,8 @@ export default class MealLogger extends Component{
             ingredients: [],
             openIngredient: true,
             openIngredient: "null",
-            allIngredients: null
+            allIngredients: null,
+            token: props.token,
         }
         this.back = props.back;
         
@@ -97,18 +98,20 @@ export default class MealLogger extends Component{
         for(let i = 0; i < updatedIngredients.length; i++){
             updatedIngredients[i].portion = updatedIngredients[i].portion.portionKey;
         }
-
+        const meal = JSON.stringify({
+            "ingredients": updatedIngredients,
+            "name": this.state.mealName, 
+            "type": ''
+        })
+        console.log(meal);
         console.log(updatedIngredients);
         const response = await fetch(process.env.REACT_APP_API_URL + "foods/addMeal", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.token}`
             },
-            body: JSON.stringify({
-                    "ingredients": updatedIngredients,
-                    "name": this.state.mealName, 
-                    "type": ''
-            })
+            body: meal
         });
         this.setState({
             mealName: '',
@@ -140,7 +143,8 @@ export default class MealLogger extends Component{
                         )}
                         {/*loop - for x in ingredientCount, display an ingredient*/}
                         {this.state.openIngredient &&
-                            <MealToIngredient  
+                            <MealToIngredient
+                                token = {this.state.token}  
                                 allIngredients={this.state.allIngredients}
                                 finalize = {(data) => this.addIngredient(data)}
                                 editIngredient={this.state.openIngredient}
