@@ -3,9 +3,8 @@ import React, {useEffect, useState} from 'react';
 import AddSchedule from './AddSchedule';
 import EditGoals from '../tools/EditGoals';
 import BrowseMeals from './BrowseMeals.js';
-import AddIngredient from '../Ingredient/AddIngredient.js';
-import EditIngredients from '../Ingredient/EditIngredient.js';
-import AddMeal from '../admin/AddMeal.js';
+import EditIngredients from '../Ingredient/Ingredients.js';
+import AddMeal from '../meal/AddMeal.js';
 
 import 'chart.js/auto';
 

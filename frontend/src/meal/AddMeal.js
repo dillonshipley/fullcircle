@@ -38,9 +38,11 @@ export default class MealLogger extends Component{
         if(!response.ok)
             console.log("Getting ingredient list failed!")
         let data = await response.json();
-        const names = data.map(item => item.ingredientName);
+        const names = data.ingredients.map(item => item.ingredientName);
+        console.log(names);
         names.sort();
-        this.setState({allIngredients: data, ingredientNames: names});
+        console.log(names);
+        this.setState({allIngredients: data.ingredients, ingredientNames: names});
     }
 
 

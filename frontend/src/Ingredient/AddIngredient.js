@@ -76,7 +76,7 @@ export default function AddIngredient({token, add}){
 
 
 
-    const itemsPerPage = 10; // Number of items per page
+    const itemsPerPage = 5; // Number of items per page
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [endIndex, setEndIndex] = useState(0);

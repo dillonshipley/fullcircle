@@ -82,11 +82,6 @@ export default function MealToIngredient({token, allIngredients, finalize, editI
         setVariableAmount(false);
     }
 
-    const changeIngredient = (event) => {
-        const newValue = event.target.value;
-        getIngredient(newValue);
-    }
-
     const changePortion = (event) => {
         let newValue = event.target.value;
         newValue = allPortions.find(item => item.name === newValue);
@@ -138,16 +133,20 @@ export default function MealToIngredient({token, allIngredients, finalize, editI
                         <Form.Label className = "ml-5">Ingredient</Form.Label>
                         <Form.Control
                         as="select"
-                        onChange= {(e) => changeIngredient(e)}
+                        onChange= {(e) => handleChange(e, getIngredient)}
                         value = {selectedIngredientName}
                         style={{ width: '80%' }}
                         className = "ml-5"
                         >
                             <option value = ""></option>
                             {/* Assuming availableIngredients is an array of available ingredients */}
-                            {(allIngredients != null) && allIngredients.map((ingredient, index) => (
-                                <option key = {index}>{ingredient.ingredientName}</option>
-                            ))}
+                            {(allIngredients != null) && allIngredients
+                                .slice() // Create a shallow copy to avoid mutating the original array
+                                .sort((a, b) => a.ingredientName.localeCompare(b.ingredientName)) // Sort the array by ingredient name
+                                .map((ingredient, index) => (
+                                    <option key={index}>{ingredient.ingredientName}</option>
+                                ))
+                            }
                         </Form.Control>
                     </Form.Group>
                     <Form.Group  style={{ width: '80%' }} className = "ml-5">

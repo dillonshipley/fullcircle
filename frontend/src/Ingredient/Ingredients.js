@@ -4,12 +4,12 @@ import {Container, Row, Form, FormControl, Col, Button, InputGroup, ListGroup, T
 import AddIngredient from './AddIngredient';
 import SingleIngredient from './SingleIngredient';
 import IngredientByAttribute from './IngredientByAttribute';
+import IngredientListView from './IngredientListView';
 
 export default function EditIngredients({token, back}){
-    let [ingredients, setIngredients] = useState(null);
-    let [ingredientFilter, setIngredientFilter] = useState("");
-    let [selectedIngredientKey, setSelectedIngredientKey] = useState(null);
 
+    let [selectedIngredientKey, setSelectedIngredientKey] = useState(null);
+    let [ingredients, setIngredients] = useState(null);
     let [allAttributes, setAllAttributes] = useState(null);
    
     const loadIngredients = async () => {
@@ -48,16 +48,13 @@ export default function EditIngredients({token, back}){
         console.log(token);
     }, [back]);    
 
-    const handleFilterChange = (e) => {
-        setIngredientFilter(e.target.value.toLowerCase());
-      };
 
 
 
     return (
         <Container fluid>
-            <Button onClick = {() => back("welcome")}>Back</Button>
-            <h2>Ingredients</h2>
+            <img style = {{width: "30px", marginTop: "10px"}} src={process.env.PUBLIC_URL + "/images/back.png"} onClick = {() => back("welcome")}/>
+            <h1 style = {{marginBottom: "30px", marginLeft: "50px"}}>Ingredients</h1>
             {/*Filter*/}
             <Tabs defaultActiveKey="profile"
                     id="uncontrolled-tab-example"
@@ -66,25 +63,7 @@ export default function EditIngredients({token, back}){
 
                         <Tab eventKey="Search By Name" title="Search By Name">
                             <Row>
-                                <Col xs = {6}>
-                                    <Form.Group controlId="filterInput">
-                                        <Form.Control
-                                        type="text"
-                                        placeholder="Search for items..."
-                                        value={ingredientFilter}
-                                        onChange={handleFilterChange}
-                                        />
-                                    </Form.Group>
-
-                                    {/*List of ingredients*/}
-                                    <ListGroup>
-                                        {ingredients != null && ingredients
-                                            .filter(ingredient => ingredient.ingredientName.toLowerCase().includes(ingredientFilter))
-                                            .map((ingredient) => (
-                                            <ListGroup.Item style = {{height: "50px"}} onClick = {() => setSelectedIngredientKey(ingredient.ingredientKey)}>{ingredient.ingredientName}</ListGroup.Item>
-                                        ))}
-                                    </ListGroup>
-                                </Col>
+                                <IngredientListView ingredients={ingredients} changeIngredient={setSelectedIngredientKey}/>
                                 <Col xs = {6}>
                                     {selectedIngredientKey != null && <SingleIngredient token = {token} ingredientKey = {selectedIngredientKey} loadIngredients={loadIngredients} attributes = {allAttributes}/>}
                                 </Col>
