@@ -12,7 +12,7 @@ export default function Meals({token, back}){
                         <BrowseMeals token = {token}/>
                     </Tab>
                     <Tab eventKey="Add Meal" title = "Add Meal (Admin)">
-                        <AddMeal />
+                        <AddMeal token = {token}/>
                     </Tab>
             </Tabs>
         </Container>

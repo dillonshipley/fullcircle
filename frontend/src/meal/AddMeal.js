@@ -1,5 +1,5 @@
 
-import {Form, Button, Container, Row, Col} from 'react-bootstrap';
+import {Form, Button, Container, Row, Col, ListGroup} from 'react-bootstrap';
 import { useState, Component } from 'react';
 
 
@@ -13,10 +13,11 @@ export default class MealLogger extends Component{
         this.state = {
             mealName: '',
             ingredients: [],
-            openIngredient: true,
-            openIngredient: "null",
+            openIngredient: false,
+            openIngredient: null,
             allIngredients: null,
             token: props.token,
+            defaultServings: 0
         }
         this.back = props.back;
         
@@ -79,18 +80,6 @@ export default class MealLogger extends Component{
     displayInfo(){
         console.log(this.state.ingredients);
     }
-
-    mealIngredient = (item) => {
-        console.log(item.portion);
-        return(
-            <Container style ={{border: "1px solid black", borderRadius: "5px", width: "70%", height: "50px"}} className="pb-5 d-flex flex-direction-row">
-                <p style={{fontSize: "20px"}}>{item.amount + " " + item.name + "\t " + item.portion.name + " (" + item.portion.grams + "g)"}</p>
-                {!this.state.openIngredient && <Button style ={{height: "50px", width: "100px"}} onClick={() => this.setOpenIngredient(item.ingredientKey)}>Edit</Button>}
-                <Button style={{ height: "50px", width: "100px" }} onClick={() => this.removeIngredient(item.ingredientKey)}>Remove</Button>            
-            </Container>
-        )
-    }
-
     changeName = (event) => {
         this.setState({ mealName: event.target.value });
     }
@@ -125,32 +114,63 @@ export default class MealLogger extends Component{
 
     render(){
         return (
-            <Container>
+            <Container fluid>
                 <h4>Add A Meal</h4>
                 <Form>
-                    <Form.Group>
-                        <Form.Label>Meal name</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={this.state.mealName}
-                            onChange = {this.changeName}
-                            placeholder={"Name of the meal"}
-                            autoComplete="off"
-                        />
-                    </Form.Group>
-                    <Container className = "pt-5">
-                        {this.state.ingredients !== null && this.state.ingredients.map((item) => 
-                           this.mealIngredient(item)
-                        )}
+                    <Row>
+                        <Col xs={8}>
+                            <Form.Group>
+                                <Form.Label>Meal name</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={this.state.mealName}
+                                    onChange = {this.changeName}
+                                    placeholder={"Name of the meal"}
+                                    autoComplete="off"
+                                />
+                                </Form.Group>
+                        </Col>
+                        <Col xs = {4}>
+                            <Form.Group>
+                                <Form.Label>Default servings</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={this.state.defaultServings}
+                                    onChange = {this.changeName}
+                                    placeholder={"Servings"}
+                                    autoComplete="off"
+                                />
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    
+                    <Container className = "pt-5" fluid>
+                        <Row>
+                            <Col xs = {4}>
+                                <ListGroup>
+                                    {this.state.ingredients !== null && this.state.ingredients.map((item) => 
+                                        <ListGroup.Item  className="d-flex flex-direction-row">
+                                            <p style={{fontSize: "20px"}}>{item.amount + " " + item.name + "\t " + item.portion.name + " (" + item.portion.grams + "g)"}</p>
+                                            {!this.state.openIngredient && <Button style ={{height: "50px", width: "100px"}} onClick={() => this.setOpenIngredient(item.ingredientKey)}>Edit</Button>}
+                                            <Button style={{ height: "50px", width: "100px" }} onClick={() => this.removeIngredient(item.ingredientKey)}>Remove</Button>            
+                                        </ListGroup.Item>
+                                    )}
+                                </ListGroup>
+                            </Col>
+                            <Col xs = {8}>
+                                {this.state.openIngredient &&
+                                    <MealToIngredient
+                                        token = {this.state.token}  
+                                        allIngredients={this.state.allIngredients}
+                                        finalize = {(data) => this.addIngredient(data)}
+                                        editIngredient={this.state.openIngredient}
+                                    />
+                                }
+                            </Col>
+                        </Row>
+
                         {/*loop - for x in ingredientCount, display an ingredient*/}
-                        {this.state.openIngredient &&
-                            <MealToIngredient
-                                token = {this.state.token}  
-                                allIngredients={this.state.allIngredients}
-                                finalize = {(data) => this.addIngredient(data)}
-                                editIngredient={this.state.openIngredient}
-                            />
-                        }
+
 
                         <br></br>
 

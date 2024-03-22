@@ -5,7 +5,7 @@ export default function IngredientListView({ingredients, changeIngredient}){
     
     let [ingredientFilter, setIngredientFilter] = useState("");
     
-    const itemsPerPage = 5; // Number of items per page
+    const itemsPerPage = 10; // Number of items per page
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil((ingredients ?? 0).length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -35,7 +35,7 @@ export default function IngredientListView({ingredients, changeIngredient}){
         {/*List of ingredients*/}
         <ListGroup>
             {ingredients != null && ingredients
-                .slice(((currentPage - 1) * itemsPerPage), (currentPage * itemsPerPage) + itemsPerPage)
+                .slice(((currentPage - 1) * itemsPerPage), (currentPage * itemsPerPage))
                 .filter(ingredient => ingredient.ingredientName.toLowerCase().includes(ingredientFilter))
                 .map((ingredient) => (
                 <ListGroup.Item style = {{height: "50px"}} onClick = {() => changeIngredient(ingredient.ingredientKey)}>{ingredient.ingredientName}</ListGroup.Item>

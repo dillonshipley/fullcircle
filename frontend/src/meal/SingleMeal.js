@@ -2,7 +2,7 @@ import {Container, Button, Row, Col, ListGroup} from 'react-bootstrap';
 import NutritionLabel from '../tools/NutritionLabel';
 export default function SingleMeal({name, ingredients, nutrients}){
 
-    function editableIngredient(ingredient){
+    function editableIngredient(ingredient, editing){
 
         const removeIngredient = (ingredientKey) => {
             let updatedIngredients = [...this.state.selectedIngredients];
@@ -11,22 +11,23 @@ export default function SingleMeal({name, ingredients, nutrients}){
         }
 
         return (
-            <>  
-                <ListGroup.Item>
+            <div className = "flex d-flex flex-direction-row align-items-center">  
+                <ListGroup.Item style = {{width: "80%"}}>
                     <p style={{fontSize: "20px", marginLeft: "10px"}}>{ingredient.amount + " " + ingredient.portion + "\t " + ingredient.name}</p>
-                    <Button style={{ height: "50px", width: "100px", marginRight: 0}} onClick={() => removeIngredient(ingredient.ingredientKey)}>Remove</Button>
-                {/*!this.state.openIngredient && <Button style ={{height: "50px", width: "100px"}} onClick={() => this.setOpenIngredient(ingredient.ingredientKey)}>Edit</Button>
-                <Button style={{ height: "50px", width: "100px" }} onClick={() => this.removeIngredient(ingredient.ingredientKey)}>Remove</Button>         */}   
                 </ListGroup.Item>
-            </>
+                <img style = {{height: "20px", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/remove.png"} onClick = {(e) => removeIngredient(ingredient.ingredientKey)}/>
+            </div>
             
         );
     }
 
     return (
         <Container fluid>
-            <h2>{name}</h2>
-            <img style = {{width: "5%", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/edit.png"} />
+            <div className = "flex d-flex flex-direction-row" style = {{width: "50%"}}>
+                <h2>{name}</h2>
+                <img style = {{width: "10%", float: "right"}} className = "ml-auto" src={process.env.PUBLIC_URL + "/images/edit.png"} />
+            </div>
+
             <Row>
                 <Col>
                 <ListGroup>
