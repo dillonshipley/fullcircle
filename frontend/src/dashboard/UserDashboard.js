@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 
 import AddSchedule from './AddSchedule';
 import EditGoals from '../tools/EditGoals';
-import BrowseMeals from './BrowseMeals.js';
+import Meals from '../meal/Meals.js';
 import EditIngredients from '../Ingredient/Ingredients.js';
 import AddMeal from '../meal/AddMeal.js';
 
@@ -120,7 +120,7 @@ export default function UserDashboard({userKey, token}){
             {mode === "schedule" &&         <AddSchedule token = {token} back = {(e) => setMode(e)} userKey = {userKey}/>}
             {mode === "goals" &&            <EditGoals token = {token} back = {(e) => setMode(e)} currentInfo={{"weight": 150}}/>}
             {mode === "addMeal" &&          <AddMeal token = {token} back = {(e => setMode(e))} />}
-            {mode === "browseMeals" &&      <BrowseMeals token = {token} back = {(e => setMode(e))} />}
+            {mode === "browseMeals" &&      <Meals token = {token} back = {(e => setMode(e))} />}
             {mode === "editIngredient" &&   <EditIngredients token = {token} back = {(e) => setMode(e)}/>}
         </>
     

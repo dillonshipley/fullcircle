@@ -126,7 +126,6 @@ export default class MealLogger extends Component{
     render(){
         return (
             <Container>
-                <Button onClick = {() => this.back("welcome")}>Back</Button>
                 <h4>Add A Meal</h4>
                 <Form>
                     <Form.Group>

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import {Button, Container, Row, Col} from 'react-bootstrap';
-import NutritionLabel from '../tools/NutritionLabel';
+import {Button, Container, Row, Col, ListGroup} from 'react-bootstrap';
+import SingleMeal from './SingleMeal.js';
 
 //Frontend meals browser
 //CHILD FUNCTIONS:
@@ -10,13 +10,23 @@ import NutritionLabel from '../tools/NutritionLabel';
 export default class BrowseMeals extends React.Component{
     constructor(props){
         super(props);
-        this.back = props.back;
         this.state = {
             displayedMeals: [],
             selectedMealName: null,
             selectedIngredients: [],
             token: props.token
         }
+    }
+
+    printArrayLimited(array, limit) {
+        let output = '';
+        for (let i = 0; i < Math.min(array.length, limit); i++) {
+            output += array[i];
+            if (i < Math.min(array.length, limit) - 1) {
+                output += ', ';
+            }
+        }
+        return output;
     }
     
     async loadMeals() {
@@ -103,58 +113,32 @@ export default class BrowseMeals extends React.Component{
         return;
     }
 
-    editableIngredient(ingredient){
-
-        const removeIngredient = (ingredientKey) => {
-            let updatedIngredients = [...this.state.selectedIngredients];
-            updatedIngredients = updatedIngredients.filter(item => item.ingredientKey !== ingredientKey)
-            this.setState({selectedIngredients: updatedIngredients});
-        }
-
-        return (
-            <>  
-                <Container style ={{border: "1px solid black", borderRadius: "5px", width: "100%", height: "50px", padding: 0, justifyContent: "space-between"}} className="pb-5 d-flex flex-direction-row">
-                    <p style={{fontSize: "20px", marginLeft: 0}}>{ingredient.amount + " " + ingredient.portion + "\t " + ingredient.name}</p>
-                    <Button style={{ height: "50px", width: "100px", marginRight: 0}} onClick={() => removeIngredient(ingredient.ingredientKey)}>Remove</Button>
-                {/*!this.state.openIngredient && <Button style ={{height: "50px", width: "100px"}} onClick={() => this.setOpenIngredient(ingredient.ingredientKey)}>Edit</Button>
-                <Button style={{ height: "50px", width: "100px" }} onClick={() => this.removeIngredient(ingredient.ingredientKey)}>Remove</Button>         */}   
-                </Container>
-            </>
-            
-        );
-    }
 
     render(){
         return(
             <Container fluid>
-                <Button onClick = {() => this.back("welcome")}>Back</Button>
                 <Row>
                     <Col xs = "4">
-                        <h1>Meals</h1>
-                        {this.state.displayedMeals != null && this.state.displayedMeals.map((meal) => (
-                            <div style = {{height: "75px", border: "1px solid black"}} className = "align-items-center" onClick = {() => this.displayMeal(meal.mealKey)}>
-                                <h4>{meal.mealName}</h4>
-                                <p>{meal.ingredientNames}</p>
-                            </div>
-                        ))}
-                    </Col>
-                    <Col xs = "4">
-                        {this.state.selectedMealName != null && <h2>{this.state.selectedMealName}</h2>}
-                        {this.state.selectedIngredients != null &&
-                            this.state.selectedIngredients.map((ingredient) => (
-                                this.editableIngredient(ingredient)
+                        <ListGroup>
+                            {this.state.displayedMeals != null && this.state.displayedMeals.map((meal) => (
+                                <ListGroup.Item style = {{height: "75px", border: "1px solid black"}} className = "align-items-center" onClick = {() => this.displayMeal(meal.mealKey)}>
+                                    <h6>{meal.mealName}</h6>
+                                    <p>{this.printArrayLimited(meal.ingredientNames, 3)}</p>
+                                </ListGroup.Item>
                             ))}
-                        {this.state.selectedMealNutrients != null && 
-                            <NutritionLabel 
-                                nutrients = {this.state.selectedMealNutrients}
-                                amount = {1} 
-                                amountUnit = "serving" 
-                                grams = {100}/>}
-                        {this.state.selectedMealName != null && <Button>Add This Meal to My Plan</Button>}
+                        </ListGroup>
 
                     </Col>
-                    <Col xs = "4">
-                    
+                    <Col xs = "8">
+                        {(this.state.selectedMealName != null &&
+                            this.state.selectedMealNutrients != null &&
+                            this.state.selectedIngredients != null) && (
+                                <SingleMeal 
+                                    name={this.state.selectedMealName} 
+                                    ingredients={this.state.selectedIngredients}
+                                     nutrients = {this.state.selectedMealNutrients}/>
+                            )}
+
                     </Col>
                 </Row>
             </Container>
