@@ -80,8 +80,8 @@ export default class MealLogger extends Component{
     displayInfo(){
         console.log(this.state.ingredients);
     }
-    changeName = (event) => {
-        this.setState({ mealName: event.target.value });
+    changeState = (key, event) => {
+        this.setState({ [key]: event.target.value });
     }
 
     submitMeal = async () => {
@@ -92,6 +92,7 @@ export default class MealLogger extends Component{
         const meal = JSON.stringify({
             "ingredients": updatedIngredients,
             "name": this.state.mealName, 
+            "defaultServings": this.state.defaultServings,
             "type": ''
         })
         console.log(meal);
@@ -115,7 +116,7 @@ export default class MealLogger extends Component{
     render(){
         return (
             <Container fluid>
-                <h4>Add A Meal</h4>
+                <h4 style = {{marginTop: "20px"}}>Add A Meal</h4>
                 <Form>
                     <Row>
                         <Col xs={8}>
@@ -124,7 +125,7 @@ export default class MealLogger extends Component{
                                 <Form.Control
                                     type="text"
                                     value={this.state.mealName}
-                                    onChange = {this.changeName}
+                                    onChange = {(e) => this.changeState("mealName", e)}
                                     placeholder={"Name of the meal"}
                                     autoComplete="off"
                                 />
@@ -136,7 +137,7 @@ export default class MealLogger extends Component{
                                 <Form.Control
                                     type="text"
                                     value={this.state.defaultServings}
-                                    onChange = {this.changeName}
+                                    onChange = {(e) => this.changeState("defaultServings", e)}
                                     placeholder={"Servings"}
                                     autoComplete="off"
                                 />
@@ -148,12 +149,15 @@ export default class MealLogger extends Component{
                         <Row>
                             <Col xs = {4}>
                                 <ListGroup>
-                                    {this.state.ingredients !== null && this.state.ingredients.map((item) => 
-                                        <ListGroup.Item  className="d-flex flex-direction-row">
-                                            <p style={{fontSize: "20px"}}>{item.amount + " " + item.name + "\t " + item.portion.name + " (" + item.portion.grams + "g)"}</p>
-                                            {!this.state.openIngredient && <Button style ={{height: "50px", width: "100px"}} onClick={() => this.setOpenIngredient(item.ingredientKey)}>Edit</Button>}
-                                            <Button style={{ height: "50px", width: "100px" }} onClick={() => this.removeIngredient(item.ingredientKey)}>Remove</Button>            
-                                        </ListGroup.Item>
+                                    {this.state.ingredients !== null && this.state.ingredients.map((item) =>
+                                        <div className = "flex d-flex flex-direction-row alight-items-center">
+                                            <ListGroup.Item  style = {{width: "60%"}}>
+                                                <p style={{fontSize: "20px"}}>{item.amount + " " + item.name + "\t " + item.portion.name + " (" + item.portion.grams + "g)"}</p>
+                                            </ListGroup.Item>
+                                            {!this.state.openIngredient && <img style = {{height: "30px", marginLeft: "10px", float: "right"}} src={process.env.PUBLIC_URL + "/images/edit.png"} onClick={() => this.setOpenIngredient(item.ingredientKey)}/>}
+                                            <img style = {{height: "30px", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/remove.png"} onClick={() => this.removeIngredient(item.ingredientKey)}/>
+                                        </div> 
+
                                     )}
                                 </ListGroup>
                             </Col>
@@ -164,6 +168,7 @@ export default class MealLogger extends Component{
                                         allIngredients={this.state.allIngredients}
                                         finalize = {(data) => this.addIngredient(data)}
                                         editIngredient={this.state.openIngredient}
+                                        close = {() => this.setState({openIngredient: false})}
                                     />
                                 }
                             </Col>

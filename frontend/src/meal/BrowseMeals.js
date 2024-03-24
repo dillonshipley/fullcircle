@@ -46,26 +46,7 @@ export default class BrowseMeals extends React.Component{
         
     }
 
-    addIngredientNutrients(array) {
-        const result = {};
-    
-        // Iterate over each object in the array
-        for(let z of array){
-            for(let key in z){
-                const value = parseFloat(z[key]);
-        
-                // If the property doesn't exist in the result, create it
-                if (!result.hasOwnProperty(key)) {
-                    result[key] = value;
-                } else {
-                    // Otherwise, add the value to the existing property
-                    result[key] += value;
-                }
-            }
-        }
 
-        return result;
-    }
 
     async displayMeal(mealKey){
         console.log("meal name" + mealKey);
@@ -87,23 +68,9 @@ export default class BrowseMeals extends React.Component{
                 return;
             }
 
-            const ingredientNutrients = [];
-            for(let x of data.ingredients){
-                if(x.nutrients == null){
-                    console.log("Error - nutrients does not exist!")
-                    return;
-                }
-                ingredientNutrients.push(x.nutrients);
-            }
-
-            const mealNutrients = this.addIngredientNutrients(ingredientNutrients);
-            const nutrients = Object.entries(mealNutrients)
-                .filter(([key, value]) => typeof value === 'number') // Filter out non-numeric values
-                .map(([name, amount]) => ({ name, amount }));
             this.setState({
                 selectedMealName: data.name,
                 selectedIngredients: data.ingredients,
-                selectedMealNutrients: nutrients
             })
         }
     };
@@ -118,11 +85,11 @@ export default class BrowseMeals extends React.Component{
         return(
             <Container fluid>
                 <Row>
-                    <Col xs = "4">
+                    <Col xs = "4" style = {{marginTop: "30px"}}>
                         <ListGroup>
                             {this.state.displayedMeals != null && this.state.displayedMeals.map((meal) => (
                                 <ListGroup.Item style = {{height: "75px", border: "1px solid black"}} className = "align-items-center" onClick = {() => this.displayMeal(meal.mealKey)}>
-                                    <h6>{meal.mealName}</h6>
+                                    <h6>{meal.mealName} {meal.defaultServings}</h6>
                                     <p>{this.printArrayLimited(meal.ingredientNames, 3)}</p>
                                 </ListGroup.Item>
                             ))}
@@ -131,9 +98,9 @@ export default class BrowseMeals extends React.Component{
                     </Col>
                     <Col xs = "8">
                         {(this.state.selectedMealName != null &&
-                            this.state.selectedMealNutrients != null &&
                             this.state.selectedIngredients != null) && (
-                                <SingleMeal 
+                                <SingleMeal
+                                    token = {this.state.token}
                                     name={this.state.selectedMealName} 
                                     ingredients={this.state.selectedIngredients}
                                      nutrients = {this.state.selectedMealNutrients}/>

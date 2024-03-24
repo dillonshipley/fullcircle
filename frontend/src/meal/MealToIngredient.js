@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Container, Row, Form, FormControl, Col, Button, InputGroup} from 'react-bootstrap';
 import NutritionLabel from '../tools/NutritionLabel';
 
-export default function MealToIngredient({token, allIngredients, finalize, editIngredient = "null"}){
+export default function MealToIngredient({token, allIngredients, finalize, close, editIngredient = "null"}){
     const [selectedIngredientKey, setSelectedIngredientKey] = useState(0);
     const [selectedIngredientName, setSelectedIngredientName] = useState("");
     const [loaded, setLoaded] = useState(false);
@@ -129,6 +129,7 @@ export default function MealToIngredient({token, allIngredients, finalize, editI
             <Col>
                 <div style = {{border: '1px solid black'}}>
                     {/*dropdown with all ingredients in the system*/}
+                    <img style = {{height: "20px", marginRight: "10px", marginTop: "10px", float: "right"}} src={process.env.PUBLIC_URL + "/images/x.png"} onClick={() => close()}/>
                     <Form.Group>
                         <Form.Label className = "ml-5">Ingredient</Form.Label>
                         <Form.Control
@@ -177,32 +178,35 @@ export default function MealToIngredient({token, allIngredients, finalize, editI
                         </Form.Group>
 
                     }
-                    <Form.Group style={{ width: '80%' }} className = "ml-5 pt-5">
-                        <Form.Label >{!variableAmount && "Ingredient amount"}{variableAmount && "Standard Ingredient Amount"}</Form.Label>
-                        <Form.Control
-                        type = "text"
-                        placeholder = "Enter an amount"
-                        value = {amount}
-                        onChange = {(event) => handleChange(event, setAmount)}
-                        autoComplete = "off" />
-                    </Form.Group>
+                    <div className = "flex d-flex flex-direction-row">
+                        <Form.Group style={{ width: '50%' }} className = "ml-5">
+                            <Form.Label >{!variableAmount && "Ingredient amount"}{variableAmount && "Standard Ingredient Amount"}</Form.Label>
+                            <Form.Control
+                            type = "text"
+                            placeholder = "Enter an amount"
+                            value = {amount}
+                            onChange = {(event) => handleChange(event, setAmount)}
+                            autoComplete = "off" />
+                        </Form.Group>
 
-                    <Form.Group>
-                        <Form.Label className = "ml-5 pt-3">Ingredient amount unit</Form.Label>
-                        <Form.Control
-                            as="select"
-                            onChange= {(e) => changePortion(e)}
-                            value = {selectedPortion?.name ?? ""}
-                            style={{ width: '80%' }}
-                            className = "ml-5"
-                        >
-                            <option value = ""></option>
-                            {/* Assuming availableIngredients is an array of available ingredients */}
-                            {(allPortions != null) && allPortions.map((x, index) => (
-                                <option key = {index} value = {x.name}>{x.name + " (" + x.grams + "g)"}</option>
-                            ))}
-                        </Form.Control>
-                    </Form.Group>
+                        <Form.Group>
+                            <Form.Label className = "ml-5">Ingredient amount unit</Form.Label>
+                            <Form.Control
+                                as="select"
+                                onChange= {(e) => changePortion(e)}
+                                value = {selectedPortion?.name ?? ""}
+                                style={{ width: '80%' }}
+                                className = "ml-5"
+                            >
+                                <option value = ""></option>
+                                {/* Assuming availableIngredients is an array of available ingredients */}
+                                {(allPortions != null) && allPortions.map((x, index) => (
+                                    <option key = {index} value = {x.name}>{x.name + " (" + x.grams + "g)"}</option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+                    </div>
+
                     <Button className = "mt-5">Remove Ingredient</Button>
                     <Button className = "mt-5" onClick = {() => submitIngredient()}>Finalize</Button>
                      <p>{errorMessage}</p>
