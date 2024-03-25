@@ -2,10 +2,9 @@ import React, {useEffect, useState} from 'react';
 
 import AddSchedule from './AddSchedule';
 import EditGoals from '../tools/EditGoals';
-import BrowseMeals from './BrowseMeals.js';
-import AddIngredient from '../Ingredient/AddIngredient.js';
-import EditIngredients from '../Ingredient/EditIngredient.js';
-import AddMeal from '../admin/AddMeal.js';
+import Meals from '../meal/Meals.js';
+import EditIngredients from '../Ingredient/Ingredients.js';
+import AddMeal from '../meal/AddMeal.js';
 
 import 'chart.js/auto';
 
@@ -74,14 +73,12 @@ const Welcome = ({token, userKey, change}) => {
               });
       
               const x = await response.json();
-              console.log(x);
               if(x != null){
                 setUsername(x.user.username)
                 setGoals(x.goals[0]);
               }
           }
           
-        console.log("token is" + token);
         getGoal();
         
     }, [userKey]);
@@ -97,8 +94,6 @@ const Welcome = ({token, userKey, change}) => {
                     <Button onClick = {() => change("goals")}>Edit Your Goals or Personal Information</Button>
                     <p></p>
                     <Button onClick = {() => change("schedule")}>Edit Your Schedule</Button>
-                    <p></p>
-                    <Button onClick = {() => change("addMeal")}>(Admin) Add a Meal</Button>
                     <p></p>
                     <Button onClick = {() => change("editIngredient")}>Ingredients</Button>
                 </Col>
@@ -121,7 +116,7 @@ export default function UserDashboard({userKey, token}){
             {mode === "schedule" &&         <AddSchedule token = {token} back = {(e) => setMode(e)} userKey = {userKey}/>}
             {mode === "goals" &&            <EditGoals token = {token} back = {(e) => setMode(e)} currentInfo={{"weight": 150}}/>}
             {mode === "addMeal" &&          <AddMeal token = {token} back = {(e => setMode(e))} />}
-            {mode === "browseMeals" &&      <BrowseMeals token = {token} back = {(e => setMode(e))} />}
+            {mode === "browseMeals" &&      <Meals token = {token} back = {(e => setMode(e))} />}
             {mode === "editIngredient" &&   <EditIngredients token = {token} back = {(e) => setMode(e)}/>}
         </>
     

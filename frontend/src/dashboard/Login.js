@@ -27,7 +27,6 @@ export default function Login({login}){
 
     const handleSignUp = async (event) => {
         event.preventDefault();
-        console.log("works");
         const response = await fetch(process.env.REACT_APP_API_URL + "users/user", {
             method: 'POST',
             headers: {
@@ -36,7 +35,6 @@ export default function Login({login}){
             body: JSON.stringify({"email": email, "password": password})
         });
         const x = await response.text();
-        console.log(x);
     }
 
 

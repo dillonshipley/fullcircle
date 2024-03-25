@@ -108,7 +108,7 @@ export default function AddIngredient({token, add}){
                             </Form.Group>
                             {ingredients !== null && ingredients.length > 0 && (
                                 <ListGroup>
-                                    {ingredients.slice(((currentPage - 1) * itemsPerPage), (currentPage * itemsPerPage) + itemsPerPage).map((x, index) => (
+                                    {ingredients.slice(((currentPage - 1) * itemsPerPage), (currentPage * itemsPerPage)).map((x, index) => (
                                         <ListGroup.Item key={startIndex + index} onClick={() => selectIngredient(x[0], x[1])}>
                                             {x[0]}
                                         </ListGroup.Item>
