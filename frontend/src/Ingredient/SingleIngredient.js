@@ -21,7 +21,6 @@ export default function SingleIngredient({token, ingredientKey, loadIngredients,
     }
 
     const removePortion = (portionKey) => {
-        console.log(portionsData);
         let updatedPortions = portionsData.filter(item => item.portionKey !== portionKey)
         setPortionsData(updatedPortions);
     }
@@ -33,7 +32,6 @@ export default function SingleIngredient({token, ingredientKey, loadIngredients,
 
     //On load and when selected ingredient key change, load new ingredeint portions
     useEffect(() => {
-        console.log("ingredient Key" + ingredientKey)
         if(ingredientKey !== null){
             loadIngredientPortions();
         }
@@ -54,7 +52,6 @@ export default function SingleIngredient({token, ingredientKey, loadIngredients,
             console.log(`Getting ingredient key ${ingredientKey} failed!`)
 
         const x = await response.json();
-        console.log(x);
         if(!"nutrients" in x){
             console.log("error!")
         } else {
@@ -108,7 +105,7 @@ export default function SingleIngredient({token, ingredientKey, loadIngredients,
         } else {
             console.log("Request successful");
         }
-        loadIngredients();
+        loadIngredients(true);
     }
 
     const handleChange = (event, setStateFunction) => {
@@ -138,28 +135,46 @@ export default function SingleIngredient({token, ingredientKey, loadIngredients,
         setSelectedAttribute("");
     }
 
+    const deleteIngredient = async () => {
+        const response = await fetch(process.env.REACT_APP_API_URL + `foods/deleteIngredient/${ingredientKey}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+        loadIngredients();
+    }
+
     if(selectedIngredient != null){
         return (
             <Container fluid>
                 <Form onSubmit = {updateIngredient}>
                     <Row>
-                        {selectedIngredient != null && <Form.Control onChange = {changeIngredientName} value = {selectedIngredientName} placeholder = {selectedIngredient.ingredient.ingredientName} />}
+                        {selectedIngredient != null && 
+                            <Form.Control 
+                                onChange = {changeIngredientName} 
+                                value = {selectedIngredientName} 
+                                placeholder = {selectedIngredient.ingredient.ingredientName}
+                                style = {{width: "80%"}} 
+                            />}
+                        <Button variant = "danger" className = "ml-auto" style = {{marginRight: "40px", height: "80%"}} onClick = {() => deleteIngredient()}>Delete</Button>
                     </Row>
                     <Row>
                         <Col xs = {6}>
-                            <h2 style = {{marginTop: "10px"}}>Nutrition</h2>
+                                <h2 style = {{marginTop: "20px"}}>Nutrition</h2>
                             <NutritionLabel 
-                            nutrients = {selectedIngredient.nutrients}
-                            amount = {1} 
-                            amountUnit = "serving" 
-                            grams = {100}/>
+                                nutrients = {selectedIngredient.nutrients}
+                                amount = {1} 
+                                amountUnit = "serving" 
+                                grams = {100}/>
                         </Col>
                         <Col xs = {6}>
                             <Row>
                                 <h2 className ="mb5">Portions</h2>
                                 {portionsData.map((portion, index) => (
 
-                                    <div className={"d-flex align-items-center flex-direction-row"}>
+                                    <div key = {index} className={"d-flex align-items-center flex-direction-row"}>
                                         <Form.Control name = {portion.portionKey} value = {portionsData[index].name}placeholder={portion.name} onChange={portionChange} style = {{width: "50%"}}/>
                                         <p  style={{marginLeft: "10px"}}>({portion.grams}g)</p>
                                         <img style = {{width: "5%", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/remove.png"} onClick = {(e) => removePortion(portion.portionKey)}/>

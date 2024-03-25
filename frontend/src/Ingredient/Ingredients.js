@@ -12,7 +12,7 @@ export default function EditIngredients({token, back}){
     let [ingredients, setIngredients] = useState(null);
     let [allAttributes, setAllAttributes] = useState(null);
    
-    const loadIngredients = async () => {
+    const loadIngredients = async (reload = false) => {
         const response = await fetch(process.env.REACT_APP_API_URL + "foods/ingredientList", {
             method: 'GET',
             headers: {
@@ -41,11 +41,14 @@ export default function EditIngredients({token, back}){
         setIngredients(allIngredients);
 
         setAllAttributes(x.attributes);
+
+        if(reload){
+            setSelectedIngredientKey(null)
+        }
     }
 
     useEffect(() => {
         loadIngredients();
-        console.log(token);
     }, [back]);    
 
 
@@ -65,7 +68,7 @@ export default function EditIngredients({token, back}){
                             <Row>
                                 <IngredientListView ingredients={ingredients} changeIngredient={setSelectedIngredientKey}/>
                                 <Col xs = {6}>
-                                    {selectedIngredientKey != null && <SingleIngredient token = {token} ingredientKey = {selectedIngredientKey} loadIngredients={loadIngredients} attributes = {allAttributes}/>}
+                                    {selectedIngredientKey != null && <SingleIngredient token = {token} ingredientKey = {selectedIngredientKey} loadIngredients={() => loadIngredients(true)} attributes = {allAttributes}/>}
                                 </Col>
                             </Row>
                         </Tab>

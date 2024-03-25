@@ -38,7 +38,7 @@ export default function IngredientListView({ingredients, changeIngredient}){
                 .slice(((currentPage - 1) * itemsPerPage), (currentPage * itemsPerPage))
                 .filter(ingredient => ingredient.ingredientName.toLowerCase().includes(ingredientFilter))
                 .map((ingredient) => (
-                <ListGroup.Item style = {{height: "50px"}} onClick = {() => changeIngredient(ingredient.ingredientKey)}>{ingredient.ingredientName}</ListGroup.Item>
+                <ListGroup.Item key = {ingredient.ingredientKey} style = {{height: "50px"}} onClick = {() => changeIngredient(ingredient.ingredientKey)}>{ingredient.ingredientName}</ListGroup.Item>
             ))}
         </ListGroup>
 

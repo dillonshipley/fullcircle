@@ -89,7 +89,7 @@ export default function IngredientByAttributes({token, all, reload}){
                 <Col xs = {6}>
                     <ListGroup>
                         {allAttributes != null && allAttributes.map((attribute) =>
-                            <div>
+                            <div key = {attribute.attributeKey}>
                                 <div className={"d-flex align-items-center flex-direction-row"}>
                                     <ListGroup.Item style = {{height: "50px", width: "90%"}} onClick = {() => ingredientsByAttribute(attribute.attributeName)}>{attribute.attributeName}</ListGroup.Item>
                                     <img style = {{width: "30px", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/remove.png"} onClick = {(e) => removeAttribute(attribute.attributeKey)}/>
@@ -97,7 +97,8 @@ export default function IngredientByAttributes({token, all, reload}){
                                 {(selectedAttribute == attribute.attributeName && attributeIngredients != null) && (
                                     <ListGroup style = {{marginBottom: "10px"}}>
                                         {attributeIngredients.map((item) => (
-                                            <ListGroup.Item 
+                                            <ListGroup.Item
+                                                key = {item.ingredientKey} 
                                                 style = {{height: "50px", width: "85%", marginLeft: "5%"}} 
                                                 onClick = {() => setIngredientKey(item.ingredientKey)}>
                                                 {item.ingredientName}

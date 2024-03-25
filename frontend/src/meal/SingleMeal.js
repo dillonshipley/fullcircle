@@ -1,13 +1,14 @@
 import {Container, Button, Row, Col, ListGroup, Alert, Form} from 'react-bootstrap';
 import NutritionLabel from '../tools/NutritionLabel';
 import { useState, useEffect } from 'react';
-export default function SingleMeal({token, name, ingredients}){
+export default function SingleMeal({token, name, ingredients, mealKey, reload}){
     let [editing, setEditing] = useState(false)
     let [changedIngredients, setChangedIngredients] = useState(ingredients);
     let [changedMealNutrients, setChangedMealNutrients] = useState(null); 
     let [ingredientNutrients, setIngredientNutrients] = useState(null);
     
-    let [selectedIngredientName, setSelectedIngredientName] = useState("")
+    let [selectedIngredientName, setSelectedIngredientName] = useState("");
+    let [selectedIngredientKey, setSelectedIngredientKey] = useState(null);
     let [selectedIngredientPortion, setSelectedIngredientPortion] = useState(null);
     let [selectedIngredientAmount, setSelectedIngredientAmount] = useState(null);
     let [selectedPortionGrams, setSelectedPortionGrams] = useState(null);
@@ -24,10 +25,20 @@ export default function SingleMeal({token, name, ingredients}){
         addMealNutrients();
     }, [changedIngredients])
 
-    const addIngredientNutrients = (result, ingredient) => {
+    useEffect(() => {
+        clearIngredient();
+    }, [editing]);
+
+    const addIngredientNutrients = (result, ingredientKey, ingredient) => {
         let resultCopy = result;
         for(let key in ingredient.nutrients){
-            const value = parseFloat(ingredient.nutrients[key]) * (ingredient.portionGrams / 100) * ingredient.amount;
+            let value;
+            if(ingredient.ingredientKey == selectedIngredientKey){
+                let originalValue = ingredientNutrients.find(item => item.name === key).amount;
+                value = originalValue * selectedIngredientAmount * selectedPortionGrams / 100;
+            }
+            else 
+                value = parseFloat(ingredient.nutrients[key]);
     
             // If the property doesn't exist in the result, create it
             if (!result.hasOwnProperty(key)) {
@@ -44,23 +55,21 @@ export default function SingleMeal({token, name, ingredients}){
         let result = {};
 
         for(let x of changedIngredients){
-            console.log(x);
             if(x.nutrients == null){
                 console.log("Error - nutrients does not exist!")
                 return;
             }
-            result = addIngredientNutrients(result, x)
+            result = addIngredientNutrients(result, x.ingredientKey, x)
         }
     
         result = Object.entries(result)
                 .filter(([key, value]) => typeof value === 'number') // Filter out non-numeric values
                 .map(([name, amount]) => ({ name, amount }));
         setChangedMealNutrients(result);
+        clearIngredient();
     }
 
-    const fetchIngredient = async (ingredientKey, amount, portionKey, portionGrams) => {
-        console.log("amount is " + amount);
-        console.log("portionGrams is " + portionGrams);
+    const fetchIngredient = async (type, ingredientKey, amount, portionKey, portionGrams) => {
         console.log("Executing foods/IngredientByKey API Call with key " + ingredientKey + "...");
         const response = await fetch(process.env.REACT_APP_API_URL + `foods/ingredientByKey/${ingredientKey}`, {
             method: 'GET',
@@ -80,6 +89,8 @@ export default function SingleMeal({token, name, ingredients}){
                 .filter(([key, value]) => typeof value === 'number') // Filter out non-numeric values
                 .map(([name, amount]) => ({ name, amount }));
             setIngredientNutrients(nutrients);
+            if(type === "edit")
+                setSelectedIngredientKey(ingredientKey);
             setSelectedIngredientName(x.ingredient.ingredientName)
             setAllIngredientPortions(x.portions)
             setSelectedIngredientPortion(portionKey)
@@ -93,6 +104,7 @@ export default function SingleMeal({token, name, ingredients}){
         setSelectedIngredientPortion(null);
         setSelectedIngredientAmount(null)
         setIngredientNutrients(null);
+        setSelectedIngredientKey(null);
     }
 
     const removeIngredient = (ingredientKey) => {
@@ -120,13 +132,11 @@ export default function SingleMeal({token, name, ingredients}){
         }
         updatedIngredients.push(update);
         setChangedIngredients(updatedIngredients);
-        clearIngredient();
     }
 
     const changePortion = (name, grams) => {
         setSelectedIngredientPortion(name);
         setSelectedPortionGrams(grams);
-        console.log(grams);
     }
 
     function editableIngredient(ingredient){
@@ -134,7 +144,7 @@ export default function SingleMeal({token, name, ingredients}){
         return (
 
             <div className = "flex d-flex flex-direction-row align-items-center">  
-                {(selectedIngredientName === ingredient.name) &&(
+                {(selectedIngredientKey === ingredient.ingredientKey) &&(
                     <>
                     <ListGroup.Item style = {{width: "80%"}}>
                         <div style={{fontSize: "20px", marginLeft: "10px"}} className = "flex d-flex flex-direction-row align-items center">
@@ -166,14 +176,14 @@ export default function SingleMeal({token, name, ingredients}){
                     </>
 
                 )}
-                {(selectedIngredientName != ingredient.name) &&(
+                {(selectedIngredientKey != ingredient.ingredientKey) &&(
                     <>
                         <ListGroup.Item style = {{width: "80%"}}>
                             <p style={{fontSize: "20px", marginLeft: "10px"}}>{ingredient.amount + " " + ingredient.portion.toLowerCase() + "\t " + ingredient.name.toLowerCase() + " (" + ingredient.amount * ingredient.portionGrams + "g)"}</p>
                         </ListGroup.Item>
-                        {editing && <img style = {{height: "20px", marginLeft: "10px", float: "right"}} src={process.env.PUBLIC_URL + "/images/edit.png"} onClick={() => fetchIngredient(ingredient.ingredientKey, ingredient.amount, ingredient.portion, ingredient.portionGrams)}/>}
+                        {editing && <img style = {{height: "20px", marginLeft: "10px", float: "right"}} src={process.env.PUBLIC_URL + "/images/edit.png"} onClick={() => fetchIngredient("edit", ingredient.ingredientKey, ingredient.amount, ingredient.portion, ingredient.portionGrams)}/>}
                         {editing && <img style = {{height: "20px", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/remove.png"} onClick = {() => removeIngredient(ingredient.ingredientKey)}/>}
-                        <img style = {{height: "20px", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/eye.png"} onClick = {() => fetchIngredient(ingredient.ingredientKey, ingredient.amount, ingredient.portion, ingredient.portionGrams)}/>
+                        <img style = {{height: "20px", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/eye.png"} onClick = {() => fetchIngredient("view", ingredient.ingredientKey, ingredient.amount, ingredient.portion, ingredient.portionGrams)}/>
                     </>
                   
                 )}
@@ -183,22 +193,51 @@ export default function SingleMeal({token, name, ingredients}){
         );
     }
 
+    const updateMeal = async () => {
+        console.log(changedIngredients);
+        const response = await fetch(process.env.REACT_APP_API_URL + `foods/updateMeal/${mealKey}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({"updatedIngredients": changedIngredients})
+        });
+        clearIngredient();
+        reload();
+    }
+
+    const deleteMeal = async () => {
+        const response = await fetch(process.env.REACT_APP_API_URL + `foods/deleteMeal/${mealKey}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+        reload();
+    }
+
     return (
         <Container fluid>
             <div className = "flex d-flex flex-direction-row" style = {{width: "50%"}}>
                 <h2 style = {{marginTop: "20px", marginBottom: "20px"}}>{name}</h2>
                 {changedIngredients != ingredients && <Button style = {{height: "50%", marginTop: "20px", marginLeft: "20px"}} onClick = {() => setChangedIngredients(ingredients)}>Restore</Button>}
+                {editing && <Button variant = "danger" style = {{height: "80%", marginTop: "20px", marginLeft: "20px"}} onClick = {() => deleteMeal()}>Delete</Button>}
                 {!editing && <img style = {{height: "30px", marginTop: "20px", marginRight: "20px",float: "right"}} className = "ml-auto" src={process.env.PUBLIC_URL + "/images/edit.png"} onClick={() => setEditing(true)}/>}
                 {editing && <img style = {{height: "30px", marginTop: "20px", marginRight: "20px", float: "right"}} className = "ml-auto" src={process.env.PUBLIC_URL + "/images/x.png"} onClick={() => setEditing(false)}/>}
             </div>
 
             <Row>
                 <Col>
-                <ListGroup>
-                    {changedIngredients.map((ingredient) => (
-                            editableIngredient(ingredient)
-                        ))}
-                </ListGroup>
+                    <ListGroup>
+                        {changedIngredients.slice() // Create a shallow copy to avoid mutating the original array
+                                .sort((a, b) => a.name.localeCompare(b.name))
+                                .map((ingredient) => (
+                                editableIngredient(ingredient)
+                            ))}
+                    </ListGroup>
+                    {changedIngredients != ingredients && <Button style = {{height: "40px", marginTop: "20px", marginLeft: "20px"}} onClick = {() => updateMeal()}>Submit</Button>}
 
                 </Col>
                 <Col>

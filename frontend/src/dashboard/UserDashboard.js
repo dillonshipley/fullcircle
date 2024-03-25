@@ -73,14 +73,12 @@ const Welcome = ({token, userKey, change}) => {
               });
       
               const x = await response.json();
-              console.log(x);
               if(x != null){
                 setUsername(x.user.username)
                 setGoals(x.goals[0]);
               }
           }
           
-        console.log("token is" + token);
         getGoal();
         
     }, [userKey]);
@@ -96,8 +94,6 @@ const Welcome = ({token, userKey, change}) => {
                     <Button onClick = {() => change("goals")}>Edit Your Goals or Personal Information</Button>
                     <p></p>
                     <Button onClick = {() => change("schedule")}>Edit Your Schedule</Button>
-                    <p></p>
-                    <Button onClick = {() => change("addMeal")}>(Admin) Add a Meal</Button>
                     <p></p>
                     <Button onClick = {() => change("editIngredient")}>Ingredients</Button>
                 </Col>

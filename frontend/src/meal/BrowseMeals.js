@@ -37,7 +37,7 @@ export default class BrowseMeals extends React.Component{
             },
         });
         let mealList = Array.from(await response.json());
-        this.setState({displayedMeals: mealList})
+        this.setState({selectedMealName: null, displayedMeals: mealList})
         console.log(mealList);
     }
 
@@ -49,7 +49,6 @@ export default class BrowseMeals extends React.Component{
 
 
     async displayMeal(mealKey){
-        console.log("meal name" + mealKey);
         const response = await fetch(process.env.REACT_APP_API_URL + `foods/mealByKey/${mealKey}`, {
             method: 'GET',
             headers: {
@@ -69,6 +68,7 @@ export default class BrowseMeals extends React.Component{
             }
 
             this.setState({
+                selectedMealKey: mealKey,
                 selectedMealName: data.name,
                 selectedIngredients: data.ingredients,
             })
@@ -89,7 +89,10 @@ export default class BrowseMeals extends React.Component{
                         <ListGroup>
                             {this.state.displayedMeals != null && this.state.displayedMeals.map((meal) => (
                                 <ListGroup.Item style = {{height: "75px", border: "1px solid black"}} className = "align-items-center" onClick = {() => this.displayMeal(meal.mealKey)}>
-                                    <h6>{meal.mealName} {meal.defaultServings}</h6>
+                                    <div className = "flex d-flex flex-direction-row">
+                                        <h6><b>{meal.mealName}</b></h6>
+                                        <p className = "ml-auto">(Makes {meal.defaultServings} servings)</p>
+                                    </div>
                                     <p>{this.printArrayLimited(meal.ingredientNames, 3)}</p>
                                 </ListGroup.Item>
                             ))}
@@ -98,13 +101,15 @@ export default class BrowseMeals extends React.Component{
                     </Col>
                     <Col xs = "8">
                         {(this.state.selectedMealName != null &&
-                            this.state.selectedIngredients != null) && (
+                            this.state.selectedIngredients != null) && 
                                 <SingleMeal
                                     token = {this.state.token}
                                     name={this.state.selectedMealName} 
                                     ingredients={this.state.selectedIngredients}
-                                     nutrients = {this.state.selectedMealNutrients}/>
-                            )}
+                                    nutrients = {this.state.selectedMealNutrients}
+                                    mealKey = {this.state.selectedMealKey}
+                                    reload = {() => this.loadMeals()}/>
+                            }
 
                     </Col>
                 </Row>
