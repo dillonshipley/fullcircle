@@ -1,8 +1,12 @@
 import {Container, Button, Row, Col, ListGroup, Alert, Form} from 'react-bootstrap';
 import NutritionLabel from '../tools/NutritionLabel';
 import { useState, useEffect } from 'react';
-export default function SingleMeal({token, name, ingredients, mealKey, reload}){
-    let [editing, setEditing] = useState(false)
+export default function SingleMeal({token, name, ingredients, mealKey, defaultServings, reload}){
+    let [editing, setEditing] = useState(false);
+    let [servings, setServings] = useState(defaultServings);
+
+    let [updatedName, setUpdatedName] = useState(name);
+
     let [changedIngredients, setChangedIngredients] = useState(ingredients);
     let [changedMealNutrients, setChangedMealNutrients] = useState(null); 
     let [ingredientNutrients, setIngredientNutrients] = useState(null);
@@ -22,23 +26,25 @@ export default function SingleMeal({token, name, ingredients, mealKey, reload}){
     }, [name])
 
     useEffect(() => {
+        console.log("changed");
         addMealNutrients();
-    }, [changedIngredients])
+    }, [changedIngredients, servings])
 
     useEffect(() => {
         clearIngredient();
     }, [editing]);
 
     const addIngredientNutrients = (result, ingredientKey, ingredient) => {
+        console.log(servings / defaultServings);
         let resultCopy = result;
         for(let key in ingredient.nutrients){
             let value;
             if(ingredient.ingredientKey == selectedIngredientKey){
                 let originalValue = ingredientNutrients.find(item => item.name === key).amount;
-                value = originalValue * selectedIngredientAmount * selectedPortionGrams / 100;
+                value = (originalValue / 100) * (selectedIngredientAmount * selectedPortionGrams) * (parseInt(servings) / defaultServings);
             }
             else 
-                value = parseFloat(ingredient.nutrients[key]);
+                value = parseFloat(ingredient.nutrients[key]) * (parseInt(servings) / defaultServings);
     
             // If the property doesn't exist in the result, create it
             if (!result.hasOwnProperty(key)) {
@@ -112,7 +118,6 @@ export default function SingleMeal({token, name, ingredients, mealKey, reload}){
         let updatedIngredients = [...changedIngredients];
         updatedIngredients = updatedIngredients.filter(item => item.ingredientKey !== ingredientKey);
         setChangedIngredients(updatedIngredients);
-        addMealNutrients();
     }
 
     const updateIngredient = (ingredientKey) => {
@@ -137,6 +142,14 @@ export default function SingleMeal({token, name, ingredients, mealKey, reload}){
     const changePortion = (name, grams) => {
         setSelectedIngredientPortion(name);
         setSelectedPortionGrams(grams);
+    }
+
+    function roundToTwoDecimals(num) {
+        if (Number.isInteger(num)) {
+            return num; // Return the number as is if it's already a whole number
+        } else {
+            return Math.round(num * 100) / 100; // Round to two decimal places otherwise
+        }
     }
 
     function editableIngredient(ingredient){
@@ -179,7 +192,7 @@ export default function SingleMeal({token, name, ingredients, mealKey, reload}){
                 {(selectedIngredientKey != ingredient.ingredientKey) &&(
                     <>
                         <ListGroup.Item style = {{width: "80%"}}>
-                            <p style={{fontSize: "20px", marginLeft: "10px"}}>{ingredient.amount + " " + ingredient.portion.toLowerCase() + "\t " + ingredient.name.toLowerCase() + " (" + ingredient.amount * ingredient.portionGrams + "g)"}</p>
+                            <p style={{fontSize: "20px", marginLeft: "10px"}}>{roundToTwoDecimals(ingredient.amount * (servings / defaultServings)) + " " + ingredient.portion.toLowerCase() + "\t " + ingredient.name.toLowerCase() + " (" + ingredient.amount * ingredient.portionGrams + "g)"}</p>
                         </ListGroup.Item>
                         {editing && <img style = {{height: "20px", marginLeft: "10px", float: "right"}} src={process.env.PUBLIC_URL + "/images/edit.png"} onClick={() => fetchIngredient("edit", ingredient.ingredientKey, ingredient.amount, ingredient.portion, ingredient.portionGrams)}/>}
                         {editing && <img style = {{height: "20px", marginLeft: "10px"}} src={process.env.PUBLIC_URL + "/images/remove.png"} onClick = {() => removeIngredient(ingredient.ingredientKey)}/>}
@@ -201,7 +214,7 @@ export default function SingleMeal({token, name, ingredients, mealKey, reload}){
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({"updatedIngredients": changedIngredients})
+            body: JSON.stringify({"updatedIngredients": changedIngredients, "newName": updatedName})
         });
         clearIngredient();
         reload();
@@ -221,11 +234,32 @@ export default function SingleMeal({token, name, ingredients, mealKey, reload}){
     return (
         <Container fluid>
             <div className = "flex d-flex flex-direction-row" style = {{width: "50%"}}>
-                <h2 style = {{marginTop: "20px", marginBottom: "20px"}}>{name}</h2>
+                {!editing && <h2 style = {{marginTop: "20px", marginBottom: "20px"}}>{updatedName}</h2>}
+                {editing && 
+                    (
+                        <Form.Control 
+                                onChange = {(e) => setUpdatedName(e.target.value)} 
+                                value = {updatedName} 
+                                placeholder = {name}
+                                style = {{width: "70%", marginTop: "20px", marginBottom: "20px", fontSize: "24px"}} 
+                            />
+                    )
+                }
+               
                 {changedIngredients != ingredients && <Button style = {{height: "50%", marginTop: "20px", marginLeft: "20px"}} onClick = {() => setChangedIngredients(ingredients)}>Restore</Button>}
-                {editing && <Button variant = "danger" style = {{height: "80%", marginTop: "20px", marginLeft: "20px"}} onClick = {() => deleteMeal()}>Delete</Button>}
-                {!editing && <img style = {{height: "30px", marginTop: "20px", marginRight: "20px",float: "right"}} className = "ml-auto" src={process.env.PUBLIC_URL + "/images/edit.png"} onClick={() => setEditing(true)}/>}
-                {editing && <img style = {{height: "30px", marginTop: "20px", marginRight: "20px", float: "right"}} className = "ml-auto" src={process.env.PUBLIC_URL + "/images/x.png"} onClick={() => setEditing(false)}/>}
+                {editing && <Button variant = "danger" style = {{height: "80%", marginTop: "25px", marginLeft: "10px"}} onClick = {() => deleteMeal()}>Delete</Button>}
+                {!editing && <img style = {{height: "30px", marginTop: "30px", marginLeft: "10px", marginRight: "10px",float: "right"}} className = "ml-auto" src={process.env.PUBLIC_URL + "/images/edit.png"} onClick={() => setEditing(true)}/>}
+                {editing && <img style = {{height: "30px", marginTop: "30px", marginLeft: "10px",marginRight: "10px", float: "right"}} className = "ml-auto" src={process.env.PUBLIC_URL + "/images/x.png"} onClick={() => setEditing(false)}/>}
+            </div>
+
+            <div className = "flex d-flex flex-direction-row" style = {{width: "50%"}}>
+                <Form.Control
+                        onChange = {(e) => setServings(e.target.value)}
+                        value = {servings}
+                        placeholder={defaultServings}
+                        style = {{width: "50px", marginBottom: "20px", fontSize: "24px"}} 
+                        />
+                    <h3 style = {{marginLeft: "10px", marginTop: "10px"}}> servings</h3>
             </div>
 
             <Row>
@@ -237,17 +271,17 @@ export default function SingleMeal({token, name, ingredients, mealKey, reload}){
                                 editableIngredient(ingredient)
                             ))}
                     </ListGroup>
-                    {changedIngredients != ingredients && <Button style = {{height: "40px", marginTop: "20px", marginLeft: "20px"}} onClick = {() => updateMeal()}>Submit</Button>}
+                    {(changedIngredients != ingredients || updatedName != name) && <Button style = {{height: "40px", marginTop: "20px", marginLeft: "20px"}} onClick = {() => updateMeal()}>Submit</Button>}
 
                 </Col>
                 <Col>
                     <div className="flex d-flex flex-direction-row">
-                        {ingredientNutrients != null && <Alert style={{width: "80%"}} variant = {"warning"}>Viewing nutrition for {selectedIngredientAmount} {selectedIngredientPortion} {selectedIngredientName.toLowerCase()}</Alert>}
+                        {ingredientNutrients != null && <Alert style={{width: "80%"}} variant = {"warning"}>Viewing nutrition for {selectedIngredientAmount * (defaultServings / servings)} {selectedIngredientPortion} {selectedIngredientName.toLowerCase()}</Alert>}
                         {ingredientNutrients != null && <img style = {{height: "30px", marginRight: "20px", float: "right"}} className = "ml-auto" src={process.env.PUBLIC_URL + "/images/x.png"} onClick={() => clearIngredient()}/>}
                     </div>
                     <NutritionLabel 
                         nutrients = {ingredientNutrients ?? changedMealNutrients}
-                        amount = {selectedIngredientAmount ?? 1} 
+                        amount = {selectedIngredientAmount ?? servings} 
                         amountUnit = {selectedIngredientPortion ?? "serving"} 
                         grams = {(selectedPortionGrams != null && selectedIngredientAmount != null) ? selectedPortionGrams * selectedIngredientAmount : 100}/>
                 </Col>

@@ -9,7 +9,7 @@ import AddMeal from '../meal/AddMeal.js';
 import 'chart.js/auto';
 
 import { Doughnut } from 'react-chartjs-2';
-import { Container, Col, Button } from 'react-bootstrap';
+import { Container, Col, Button, Nav, Row } from 'react-bootstrap';
 import _default from 'react-bootstrap/esm/Accordion';
 
 const DonutChart = ({carbs, fats, protein}) => {
@@ -83,25 +83,39 @@ const Welcome = ({token, userKey, change}) => {
         
     }, [userKey]);
 
+    const Sidebar = () => {
+        return (
+          <Nav className="d-none d-md-block bg-light sidebar">
+            <div className="sidebar-sticky">
+                <h1 style = {{paddingLeft: "15px", paddingTop: "25px", paddingBottom: "25px"}}>Nutrition</h1>
+                <h3 style = {{paddingLeft: "15px", paddingTop: "25px", paddingBottom: "25px"}} onClick = {() => change("editIngredient")}>Ingredients</h3>
+                <h3 style = {{paddingLeft: "15px", paddingTop: "25px", paddingBottom: "25px"}} onClick = {() => change("browseMeals")}>Browse All Meals</h3>
+            </div>
+          </Nav>
+        );
+      };
+
     return (
         <>
-            <h1 className="mb-5">Welcome, {username}</h1>
-            <Container fluid className = "d-flex align-items-center justify-content-center"  style={{ height: '100vh' }}>
-                <Col style={{ textAlign: 'center' }} xs = {6}>
-                    <h2>Goals</h2>
-                    
-                    {goals != null && <NutritionalText goals = {goals}/>}
-                    <Button onClick = {() => change("goals")}>Edit Your Goals or Personal Information</Button>
-                    <p></p>
-                    <Button onClick = {() => change("schedule")}>Edit Your Schedule</Button>
-                    <p></p>
-                    <Button onClick = {() => change("editIngredient")}>Ingredients</Button>
+            <Row>
+                <Col xs ={9}>
+                    <Container fluid className = "d-flex align-items-center justify-content-center"  style={{ height: '100vh' }}>
+                        <Col style={{ textAlign: 'center' }} xs = {6}>
+                            <h1 className="mb-5">Welcome, {username}</h1>
+                            <h2>Goals</h2>
+                            {goals != null && <NutritionalText goals = {goals}/>}
+                            <Button onClick = {() => change("goals")}>Edit Your Goals or Personal Information</Button>
+                            <p></p>
+                            <Button onClick = {() => change("schedule")}>Edit Your Schedule</Button>
+                            <p></p>
+                            
+                        </Col>
+                    </Container>
                 </Col>
-                <Col xs = {6} style={{ textAlign: 'center' }}>
-                    <h2>Meals</h2>
-                    <Button onClick = {() => change("browseMeals")}>Browse All Meals</Button>
-                </Col>
-            </Container>
+                <Col xs={3}>
+                    <Sidebar />
+                </Col>            
+            </Row>
         </>
     );
 }

@@ -70,6 +70,7 @@ export default class BrowseMeals extends React.Component{
             this.setState({
                 selectedMealKey: mealKey,
                 selectedMealName: data.name,
+                selectedMealServings: data.defaultServings,
                 selectedIngredients: data.ingredients,
             })
         }
@@ -108,6 +109,7 @@ export default class BrowseMeals extends React.Component{
                                     ingredients={this.state.selectedIngredients}
                                     nutrients = {this.state.selectedMealNutrients}
                                     mealKey = {this.state.selectedMealKey}
+                                    defaultServings = {this.state.selectedMealServings}
                                     reload = {() => this.loadMeals()}/>
                             }
 
